@@ -29,7 +29,7 @@ table.form th,table.form td{border:1px solid var(--line);padding:9px 10px;vertic
 table.form th{background:#fafbfc;width:170px;font-weight:600}
 table.form th .hint{font-weight:400;display:block}
 @media (max-width:640px){table.form th,table.form td{display:block;width:100%}table.form th{border-bottom:0}}
-input[type=text],input[type=email],input[type=tel],input[type=date],input[type=time],input[type=url],textarea,select{
+input[type=text],input[type=email],input[type=tel],input[type=date],input[type=time],input[type=url],input[type=password],textarea,select{
   width:100%;font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink)}
 textarea{min-height:90px;resize:vertical}
 textarea#body{min-height:300px}
@@ -76,6 +76,9 @@ button.small{padding:5px 10px;font-size:14px}
 .ai-box{border:1px dashed #9db4d8;border-radius:8px;padding:10px 12px;margin-top:10px;background:#f9fbfe}
 .ai-out{white-space:pre-wrap;font-size:14.5px;margin-top:8px;max-height:420px;overflow:auto}
 dialog{border:1px solid var(--line);border-radius:12px;max-width:520px;width:92vw;padding:18px}
+dialog{position:relative}
+.dlg-x{position:absolute;top:10px;right:10px;border:0;background:none;font-size:26px;line-height:1;padding:2px 8px;color:var(--muted)}
+.dlg-x:hover{color:var(--ink);background:var(--bg)}
 dialog::backdrop{background:rgba(10,20,40,.35)}
 .result{margin-top:10px}
 .result a{display:block;margin-top:6px}
@@ -291,11 +294,15 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
 </div>
 
 <dialog id="aiDlg">
+  <button type="button" class="dlg-x" id="aiClose" aria-label="關閉">×</button>
   <h3 style="margin-top:0">高科iAI 設定</h3>
-  <p class="hint">以下資訊請至高科iAI 入口網站的使用說明頁查詢。設定只存在這台電腦的瀏覽器，不會送給公關中心。</p>
-  <label>API 網址（Base URL）<input type="url" id="aiBase" placeholder="例如 https://…/v1"></label><br><br>
-  <label>模型名稱<input type="text" id="aiModel"></label><br><br>
-  <label>你的 API key<input type="password" id="aiKey"></label>
+  <p class="hint">API 網址和模型已預先填好，只要貼上你自己的 API key 即可。還沒有 key 的話，請至 <a href="https://www.iai.nkust.edu.tw/apply" target="_blank" rel="noopener">高科iAI 申請頁</a> 申請。設定只存在這台電腦的瀏覽器，不會送給公關中心。</p>
+  <label>API 網址（Base URL）<input type="url" id="aiBase"></label><br><br>
+  <label>模型名稱
+    <div style="display:flex;gap:6px"><select id="aiModel"></select><button type="button" class="small" id="aiList" style="white-space:nowrap">載入可用模型</button></div>
+  </label>
+  <div class="hint" id="aiListMsg"></div><br>
+  <label>你的 API key<input type="password" id="aiKey" placeholder="貼上 iAI 申請頁複製的 key"></label>
   <div style="margin-top:14px;display:flex;gap:8px;justify-content:flex-end">
     <button type="button" id="aiClear">清除</button>
     <button type="button" id="aiSave" style="background:var(--brand);color:#fff">儲存</button>
@@ -691,16 +698,34 @@ async function buildDocx(d){
 
 /* ===== 高科iAI ===== */
 const AI_KEY='nkust-iai-settings';
-function aiLoad(){try{return JSON.parse(localStorage.getItem(AI_KEY))||{}}catch{return {}}}
-$('aiSet').onclick=()=>{const s=aiLoad();$('aiBase').value=s.base||'';$('aiModel').value=s.model||'';$('aiKey').value=s.key||'';$('aiDlg').showModal()};
-$('aiSave').onclick=()=>{try{localStorage.setItem(AI_KEY,JSON.stringify({base:val('aiBase').replace(/\/+$/,''),model:val('aiModel'),key:val('aiKey')}))}catch{}$('aiDlg').close()};
-$('aiClear').onclick=()=>{try{localStorage.removeItem(AI_KEY)}catch{}$('aiBase').value=$('aiModel').value=$('aiKey').value=''};
+const AI_DEFAULT={base:'https://www.iai.nkust.edu.tw/aihub/v1',models:['Furen-large','Furen-max']};
+function aiLoad(){let s={};try{s=JSON.parse(localStorage.getItem(AI_KEY))||{}}catch{}return {base:s.base||AI_DEFAULT.base,model:s.model||AI_DEFAULT.models[0],key:s.key||'',models:s.models||AI_DEFAULT.models}}
+function normBase(u){u=(u||'').trim().replace(/\/+$/,'').replace(/\/chat\/completions$/,'');if(u&&!/\/v1$/.test(u))u+='/v1';return u}
+function fillModels(list,sel){const m=$('aiModel');m.innerHTML='';[...new Set(list)].forEach(x=>{const o=document.createElement('option');o.value=o.textContent=x;m.appendChild(o)});if(sel&&list.includes(sel))m.value=sel}
+$('aiSet').onclick=()=>{const s=aiLoad();$('aiBase').value=s.base;fillModels(s.models,s.model);$('aiKey').value=s.key;$('aiListMsg').textContent='';$('aiDlg').showModal()};
+$('aiClose').onclick=()=>$('aiDlg').close();
+$('aiDlg').addEventListener('click',e=>{if(e.target===$('aiDlg')){const r=$('aiDlg').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)$('aiDlg').close()}});
+$('aiSave').onclick=()=>{const models=[...$('aiModel').options].map(o=>o.value);
+  try{localStorage.setItem(AI_KEY,JSON.stringify({base:normBase(val('aiBase')),model:$('aiModel').value,key:val('aiKey'),models}))}catch{}$('aiDlg').close()};
+$('aiClear').onclick=()=>{try{localStorage.removeItem(AI_KEY)}catch{}$('aiBase').value=AI_DEFAULT.base;fillModels(AI_DEFAULT.models);$('aiKey').value='';$('aiListMsg').textContent=''};
+$('aiList').onclick=async()=>{
+  const base=normBase(val('aiBase')),key=val('aiKey'),msg=$('aiListMsg');
+  if(!key){msg.textContent='請先貼上 API key。';return}
+  msg.textContent='載入中…';
+  try{const r=await fetch(base+'/models',{headers:{'Authorization':'Bearer '+key,'accept':'application/json'}});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const j=await r.json();
+    const chat=(j.data||[]).map(x=>x.id).filter(id=>!/asr|speaker|embed|rerank|pic|image|whisper|tts/i.test(id));
+    if(!chat.length)throw new Error('沒有可用的對話模型');
+    fillModels(chat,$('aiModel').value);msg.textContent=`已載入 ${chat.length} 個對話模型。`;
+  }catch(err){msg.textContent=`無法載入模型列表（${err.message}），可先使用預設的 Furen-large。`}
+};
 const GUIDE=`你是國立高雄科技大學秘書室公關中心的新聞稿編輯，請依「高科大新聞稿撰寫指引」檢視申請單位的初稿，用繁體中文回覆。
 規範：1.標題20字內，簡單主標題描述重點。2.事件亮點條列3點內。3.內文800至1000字，首段交代人、事、時、地、物。4.校名首次寫「國立高雄科技大學（以下簡稱高科大）」，之後一律稱「高科大」；英文縮寫首次出現應註明中英文全名，例如USR（University Social Responsibility，大學社會責任）。5.引述受訪者發言須經本人確認；姓名、單位、職稱、專有名詞及數據須核實。6.寫作參照中央通訊社新聞稿寫作原則：倒金字塔、客觀陳述、避免宣傳性形容詞堆砌。
 回覆格式：一、整體評估（3句內）；二、逐項檢核（符合／需修正，並說明）；三、建議修改的標題（2個）；四、建議改寫的導言段。不要捏造稿件中沒有的事實；需要申請單位補充的資訊請列為「待補資料」。`;
 $('aiRun').onclick=async()=>{
   const s=aiLoad(),out=$('aiOut');
-  if(!s.base||!s.key||!s.model){$('aiSet').click();return}
+  if(!s.key){$('aiSet').click();return}
   if(chars($('body').value)<50){out.textContent='請先填寫初稿內文。';return}
   out.textContent='AI 檢視中…';
   const user=`新聞標題：${val('title')}\n事件亮點：${[val('hl1'),val('hl2'),val('hl3')].filter(Boolean).join('；')}\n出席貴賓：${val('guests3')}\n初稿內文：\n${$('body').value}`;
