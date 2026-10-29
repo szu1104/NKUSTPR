@@ -152,11 +152,10 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
           <label class="chk"><input type="checkbox" data-cat="fbBig">大型企劃（直播、短影音、抽獎、系列宣傳）</label>
           <span class="hint">事件日前 30 日　<span class="status" id="st-fbBig"></span></span>
           <div class="notice info hidden" id="note-fbBig">社群宣傳以本校官方平台為限；抽獎活動由申請單位自辦，公關中心協助宣傳。如有媒體宣傳經費規劃，請另洽公關中心。</div></td></tr>
-      <tr><th>其他需求</th>
-        <td><label class="chk"><input type="checkbox" id="redirHonor">榮譽肯定／校官網 Banner</label>
-          <label class="chk"><input type="checkbox" id="redirCrisis">聲明稿、回應媒體詢問</label>
-          <div class="notice warn hidden" id="note-honor">榮譽肯定及校官網 Banner 不適用本表，請依「BC04 校官網首頁資訊刊登作業程序」，至校務系統「電算中心電子表單申請系統」之「校園網頁建置修改申請」提出。</div>
-          <div class="notice warn hidden" id="note-crisis">重大事件或負面輿情之媒體因應不適用本表，請依「BC01 重大事件媒體處理作業程序」辦理，並直接聯繫公關中心。</div></td></tr>
+      <tr><th>榮譽肯定／校官網 Banner</th>
+        <td><span class="hint">不適用本表。請依「BC04 校官網首頁資訊刊登作業程序」，至</span>
+          <a href="https://ws1.nkust.edu.tw/CCElecForm/" target="_blank" rel="noopener">電算中心電子表單申請系統</a>
+          <span class="hint">登入後，選擇「校園網頁建置修改申請」提出。</span></td></tr>
     </table>
     <div class="notice warn hidden" id="overdueBox">
       <b>部分項目已逾申請期限。</b>依 BC03，逾申請期限或已逾新聞時效者，公關中心得退回或改以其他管道刊登。<br>
@@ -196,6 +195,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
         <button type="button" class="small" id="aiSet2">設定 iAI</button>
       </div>
       <div class="ai-out" id="draftOut"></div>
+      <div class="hint" style="margin-top:6px">※ 套用後，新聞標題、事件亮點和初稿內文都可以在下方欄位直接修改；也可以不套用，只複製需要的段落自行貼上。AI 草稿僅供參考，送出前請逐一核對人名、職稱、數據與引言。</div>
     </div>
     <table class="form">
       <tr><th>* 新聞標題<span class="hint">20 字內</span></th>
@@ -392,13 +392,9 @@ function check(){
   $('note-staff').classList.toggle('hidden',!c.includes('staff'));
   $('note-fbBig').classList.toggle('hidden',!c.includes('fbBig'));
   $('resultTypes').classList.toggle('hidden',!c.includes('result'));
-  $('note-honor').classList.toggle('hidden',!$('redirHonor').checked);
-  $('note-crisis').classList.toggle('hidden',!$('redirCrisis').checked);
   $('dupNote').classList.toggle('hidden',$('cfDup').checked||!c.length);
 
   if(!c.length){I.push('請先勾選申請項目')}
-  if($('redirHonor').checked)W.push('榮譽肯定／Banner 請改至電子表單系統申請（BC04）');
-  if($('redirCrisis').checked)W.push('聲明稿、回應媒體詢問請依 BC01 辦理');
 
   /* 期限判定 */
   const ev=parseDate(val('eventDate'));
