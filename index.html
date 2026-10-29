@@ -18,6 +18,8 @@ header{background:var(--brand);color:#fff;padding:22px 16px}
 header .wrap{max-width:1180px;margin:0 auto}
 header small{opacity:.8;display:block;font-size:13px}
 header h1{margin:4px 0 0;font-size:24px;letter-spacing:.04em}
+.guide-link{display:inline-block;margin-top:8px;color:#fff;font-size:14px;border:1px solid rgba(255,255,255,.6);border-radius:99px;padding:3px 12px;text-decoration:none}
+.guide-link:hover{background:rgba(255,255,255,.15)}
 .layout{max-width:1180px;margin:0 auto;padding:20px 16px 80px;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start}
 @media (max-width:900px){.layout{grid-template-columns:1fr}.side{position:static!important}}
 section.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:18px;overflow:hidden}
@@ -90,6 +92,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
 <header><div class="wrap">
   <small>國立高雄科技大學｜秘書室公關中心｜BC03附表（修訂日期：115年10月28日）</small>
   <h1>新聞資訊上架申請表</h1>
+  <a class="guide-link" href="BC03-writing-guide.pdf" target="_blank" rel="noopener">📄 下載新聞稿撰寫指引（含範例）</a>
 </div></header>
 
 <div class="layout">
@@ -203,6 +206,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
         <td><textarea id="guests3" style="min-height:60px"></textarea></td></tr>
       <tr><th>* 初稿內文<span class="hint">800 至 1000 字</span></th>
         <td><textarea id="body" placeholder="首段交代人、事、時、地、物；校名首次寫「國立高雄科技大學（以下簡稱高科大）」。"></textarea>
+          <div class="hint">撰寫方式請參閱<a href="BC03-writing-guide.pdf" target="_blank" rel="noopener">新聞稿撰寫指引（PDF）</a></div>
           <div class="counter" id="cnt-body"></div>
           <div class="ai-box">
             <b>AI 稿件建議（高科iAI）</b> <span class="hint">使用你自己的 iAI API key，扣你自己的額度；key 只存在你的瀏覽器。</span><br>
@@ -252,7 +256,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
 <section class="card hidden" id="sec6">
   <h2>六、照片及圖說</h2>
   <div class="body">
-    <div class="notice info">照片規格：橫式為主，寬高比 3:2；長邊 3000 像素以上（如 3000×2000）；JPG 原檔，單檔 2MB 以上。新聞稿 5 張以內；社群貼文可提供多張供挑選。以簽約、頒獎、操作、互動等動態畫面為主，團體合照至多 1 張。</div>
+    <div class="notice info">照片規格：橫式為主，寬高比 3:2；長邊 3000 像素以上（如 3000×2000）；JPG 原檔，單檔 2MB 以上。新聞稿 5 張以內；社群貼文可提供多張供挑選。以簽約、頒獎、操作、互動等動態畫面為主，團體合照至多 1 張。圖說寫法請參閱<a href="BC03-writing-guide.pdf" target="_blank" rel="noopener">新聞稿撰寫指引（PDF）</a>。</div>
     <table class="form">
       <tr><th>照片自我檢核<span class="hint">選取照片即可檢查規格，檔案不會上傳</span></th>
         <td><input type="file" id="photoFiles" accept="image/*" multiple><div class="photo-res" id="photoRes"></div></td></tr>
