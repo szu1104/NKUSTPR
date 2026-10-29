@@ -244,8 +244,20 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
 <section class="card hidden" id="sec5">
   <h2>五、社群素材（申請 Facebook／Instagram 者填寫）</h2>
   <div class="body">
+    <div class="ai-box" style="margin:0 0 14px">
+      <b>AI 協助撰寫貼文（高科iAI）</b> <span class="hint">輸入活動重點，AI 會產生 FB 與 IG 兩個版本：FB 版資訊完整，IG 版針對學生族群、簡短活潑並附 hashtag。上方基本資料、預定發文日與相關連結會一併提供給 AI。</span>
+      <div class="notice info hidden" id="socialFromNews" style="margin-top:8px">✓ 已偵測到第三項新聞稿內容，AI 會以新聞稿為主濃縮改寫成貼文。下方可留空，或補充社群專屬資訊（如報名連結、抽獎辦法、集合時間）。</div>
+      <textarea id="socialNotes" style="margin-top:8px;min-height:110px" placeholder="例如：&#10;- 11/20 職涯博覽會，燕巢校區活動中心 10:00–16:00&#10;- 80 家企業、超過 1,000 個職缺&#10;- 現場有履歷健診、模擬面試&#10;- 集點可抽 AirPods"></textarea>
+      <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
+        <button type="button" class="small" id="aiSocial">生成 FB／IG 貼文</button>
+        <button type="button" class="small hidden" id="aiSocialApply" style="background:var(--brand);color:#fff">套用到貼文內容</button>
+        <button type="button" class="small" id="aiSet3">設定 iAI</button>
+      </div>
+      <div class="ai-out" id="socialOut"></div>
+      <div class="hint" style="margin-top:6px">※ 套用後可在「貼文內容」欄直接修改，也可以只複製需要的版本。公關中心仍會依各平台調整文案；活動資訊、日期與連結請再次核對。</div>
+    </div>
     <table class="form">
-      <tr><th>* 貼文內容</th><td><textarea id="postText" placeholder="提供貼文文案或重點；含活動名稱、日期、地點等，由公關中心依平台改寫"></textarea></td></tr>
+      <tr><th>* 貼文內容</th><td><textarea id="postText" style="min-height:200px" placeholder="提供貼文文案或重點；含活動名稱、日期、地點等，由公關中心依平台改寫"></textarea></td></tr>
       <tr><th>相關連結</th><td><input type="url" id="postLink" placeholder="如報名網址；無則免填"></td></tr>
       <tr><th>素材檔名／下載連結</th><td><input type="text" id="assets" placeholder="活動預告附確認版圖卡；花絮、成果附照片"></td></tr>
     </table>
@@ -384,6 +396,7 @@ function check(){
   $('sec3').classList.toggle('hidden',!needS3);
   $('sec4').classList.toggle('hidden',!needS4);
   $('sec5').classList.toggle('hidden',!isSocial);
+  $('socialFromNews').classList.toggle('hidden',!(isSocial&&needS3&&chars($('body').value)>=50));
   $('sec6').classList.toggle('hidden',!(isNews||c.includes('fbPost')));
   $('secConfirm').classList.toggle('hidden',!c.length);
   $('route-news').className=isNews?'active':'dim';
@@ -439,10 +452,10 @@ function check(){
     if(!t)E.push('請填新聞標題');else if(tl>20)W.push(`新聞標題 ${tl} 字，超過 20 字`);
     if(!val('hl1'))E.push('請至少填 1 點事件亮點');
     const b=$('body').value,bl=chars(b);
-    $('cnt-body').textContent=`${bl} 字（規定 800–1000 字）`;$('cnt-body').className='counter '+(bl&&(bl<800||bl>1000)?'bad':bl?'ok':'');
+    $('cnt-body').textContent=`${bl} 字（建議 800–1000 字）`;$('cnt-body').className='counter '+(bl>1000?'bad':bl?'ok':'');
     if(!bl)E.push('請填初稿內文');
     else{
-      if(bl<800||bl>1000)W.push(`內文 ${bl} 字，不在 800–1000 字範圍`);
+      if(bl>1000)W.push(`內文 ${bl} 字，超過建議上限 1000 字`);
       const full=/國立高雄科技大學[（(]以下簡稱高科大[）)]/;const m=b.search(full);
       if(m<0)W.push('內文首次提及校名應寫「國立高雄科技大學（以下簡稱高科大）」');
       else{const first=b.indexOf('高科大');if(first>=0&&first<m)W.push('「高科大」在完整校名之前就出現了，首次應寫全稱')}
@@ -469,6 +482,7 @@ function check(){
 
   /* 五、社群 */
   if(isSocial&&!val('postText'))E.push('請填貼文內容或重點');
+  if(isSocial&&/○○/.test(val('postText')))W.push('貼文內容仍有「○○」待補資訊');
 
   /* 六、照片圖說 */
   if(!$('sec6').classList.contains('hidden')){
@@ -694,7 +708,7 @@ async function buildDocx(d){
 
   // 系統檢核紀錄
   {const sectPr=kids(body,'sectPr')[0];
-    const note=[`本表由線上申請系統產生（${new Date().toLocaleString('zh-TW',{hour12:false})}）。`,...(d.warnings.length?['系統檢核提醒：',...d.warnings.map(w=>'・'+w)]:['系統檢核：無提醒事項。'])];
+    const note=[`本表由線上申請系統產生（${new Date().toLocaleString('zh-TW',{hour12:false})}）。`,...(c.some(x=>NEWS_CATS.includes(x))?[`新聞稿內文 ${chars(d.body)} 字、標題 ${chars(d.title)} 字。`]:[]),...(d.warnings.length?['系統檢核提醒：',...d.warnings.map(w=>'・'+w)]:['系統檢核：無提醒事項。'])];
     note.forEach(line=>{const p=doc.createElementNS(WNS,'w:p'),r=doc.createElementNS(WNS,'w:r'),rp=doc.createElementNS(WNS,'w:rPr');
       const f=doc.createElementNS(WNS,'w:rFonts');['ascii','eastAsia','hAnsi'].forEach(a=>f.setAttributeNS(WNS,'w:'+a,'Microsoft JhengHei'));
       const col=doc.createElementNS(WNS,'w:color');col.setAttributeNS(WNS,'w:val','808080');
@@ -808,6 +822,61 @@ $('aiApply').onclick=()=>{
   $('title').value=lastDraft.title;['hl1','hl2','hl3'].forEach((id,i)=>$(id).value=lastDraft.highlights[i]||'');
   $('body').value=lastDraft.body.replace(/\\n/g,'\n');check();
   $('title').scrollIntoView({behavior:'smooth',block:'center'});
+};
+
+/* ===== AI 協助撰寫社群貼文 ===== */
+const SOCIAL_SYS=`你是國立高雄科技大學（高科大）秘書室公關中心的社群小編，負責經營學校官方 Facebook 與 Instagram。請依申請單位提供的資訊，分別撰寫 FB 與 IG 貼文。用繁體中文（台灣用語）。
+共同原則：
+1. 依貼文類型調整：活動預告重在吸引報名或參加，清楚交代日期、時間、地點、對象與報名方式；活動花絮或成果重在呈現現場亮點與成果，用過去式描述；大型企劃可製造期待感。
+2. 適度使用 emoji 增加可讀性，常用於段落開頭或資訊條列（如 📅 日期、📍 地點、🔗 報名），但不要每句都放，也不要連續堆疊。
+3. 【重要】不得捏造資訊中沒有的日期、時間、地點、數據、獎品、人名或引言。資訊不足之處用「○○」標示，並列入待補。
+4. 有報名或相關連結時放在文末；沒有提供連結就不要編造。\n5. 若有提供【新聞稿】，以新聞稿為主要依據濃縮改寫成社群貼文：挑出最吸引人的一兩個亮點，不要逐段摘要，也不要沿用新聞稿的正式語氣；【補充資訊】中的社群專屬內容（如報名方式、抽獎）要一併放入。不得加入新聞稿與補充資訊以外的事實。
+Facebook 版：
+- 對象為校內外大眾、家長、校友與合作夥伴，語氣親切但正式。
+- 約 150 至 300 字：一句吸睛開頭，接著說明活動內容與重點，活動資訊條列，最後行動呼籲。
+- 文末 hashtag 1 至 3 個，固定包含 #高科大。
+Instagram 版：
+- 對象以學生為主，語氣輕鬆活潑、口語化，可以用學生熟悉的說法，但不要過度網路流行語或不雅用語。
+- 內文精簡，約 50 至 120 字，短句、多分行，第一行就要抓住注意力。
+- 重點資訊用 emoji 條列。
+- 文末另起一行放 hashtag 5 至 8 個，包含 #高科大 #NKUST，其餘依活動主題。
+只輸出一個 JSON 物件，不要有其他文字或 Markdown，格式：
+{"fb":"FB 貼文全文（含 hashtag，分行用\\n）","ig":"IG 貼文全文（含 hashtag，分行用\\n）","missing":["待補資訊"]}`;
+let lastSocial=null;
+$('aiSet3').onclick=()=>$('aiSet').click();
+function newsForSocial(){
+  if($('sec3').classList.contains('hidden'))return '';
+  const b=$('body').value.trim();if(chars(b)<50)return '';
+  return [`標題：${val('title')}`,`事件亮點：${[val('hl1'),val('hl2'),val('hl3')].filter(Boolean).join('；')}`,`內文：\n${b}`].join('\n');
+}
+$('aiSocial').onclick=async()=>{
+  const s=aiLoad(),out=$('socialOut');
+  if(!s.key){$('aiSet').click();return}
+  const notes=$('socialNotes').value.trim()||val('postText');
+  const news=newsForSocial();
+  if(!news&&chars(notes)<10){out.textContent='請先輸入一些活動重點（至少一兩句）。';return}
+  const c=cats();const types=[c.includes('fbPre')?'活動預告':'',c.includes('fbPost')?'活動花絮、成果':'',c.includes('fbBig')?'大型企劃':''].filter(Boolean).join('、')||'（未勾選）';
+  const ctx=[`貼文類型：${types}`,`申請單位：${val('unit')||'（未填）'}`,`活動或成果名稱：${val('eventName')||'（未填）'}`,
+    `事件日期：${val('eventDate')?roc(val('eventDate')):'（未填）'}`,`事件地點：${val('eventPlace')||'（未填）'}`,
+    val('postDate')?`預定發文日：${roc(val('postDate'))}`:'',val('postLink')?`相關連結：${val('postLink')}`:'相關連結：（無）',`今天日期：${fmt(today)}`].filter(Boolean).join('\n');
+  out.textContent='AI 撰寫中…';$('aiSocialApply').classList.add('hidden');$('aiSocial').disabled=true;
+  try{
+    const r=await fetch(s.base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+s.key},
+      body:JSON.stringify({model:s.model,temperature:0.7,messages:[{role:'system',content:SOCIAL_SYS},{role:'user',content:`【基本資料】\n${ctx}`+(news?`\n\n【新聞稿】\n${news}`:'')+(notes?`\n\n【${news?'補充資訊':'申請單位提供的活動重點'}】\n${notes}`:'')}]})});
+    if(!r.ok)throw new Error(`HTTP ${r.status} ${await r.text()}`);
+    const j=await r.json();const raw=(j.choices?.[0]?.message?.content||'').replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'');
+    let d;try{const a=raw.indexOf('{'),b=raw.lastIndexOf('}');d=JSON.parse(raw.slice(a,b+1));if(!d.fb||!d.ig)throw 0}catch{out.textContent=raw||'AI 回傳格式無法解析，請再試一次。';return}
+    d.fb=d.fb.replace(/\\n/g,'\n');d.ig=d.ig.replace(/\\n/g,'\n');d.missing=d.missing||[];lastSocial=d;
+    out.textContent=`【Facebook 版】（${chars(d.fb)} 字）\n${d.fb}\n\n【Instagram 版】（${chars(d.ig)} 字）\n${d.ig}`+(d.missing.length?`\n\n【待補資訊】\n${d.missing.map(m=>'・'+m).join('\n')}`:'');
+    $('aiSocialApply').classList.remove('hidden');
+  }catch(err){out.textContent=`無法連線至高科iAI：${err.message}\n\n可能原因：(1) API key 有誤或額度用完；(2) 不在校園網路內；(3) iAI 尚未開放從外部網頁直接呼叫（CORS）。`}
+  finally{$('aiSocial').disabled=false}
+};
+$('aiSocialApply').onclick=()=>{
+  if(!lastSocial)return;
+  if(val('postText')&&!confirm('貼文內容已有文字，要用 AI 草稿覆蓋嗎？'))return;
+  $('postText').value=`【Facebook】\n${lastSocial.fb}\n\n【Instagram】\n${lastSocial.ig}`;check();
+  $('postText').scrollIntoView({behavior:'smooth',block:'center'});
 };
 
 if(!CONFIG.SUBMIT_URL)$('submitBtn').textContent='產生申請表（Word）';
