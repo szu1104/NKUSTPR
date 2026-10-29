@@ -184,6 +184,16 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
 <section class="card hidden" id="sec3">
   <h2>三、新聞稿（校內稿、校外稿、到校採訪、成果報導填寫）</h2>
   <div class="body">
+    <div class="ai-box" style="margin:0 0 14px">
+      <b>AI 協助撰稿（高科iAI）</b> <span class="hint">把零散的資訊貼進來，AI 會依新聞稿撰寫指引產生標題、事件亮點和內文草稿。上方基本資料（單位、活動名稱、日期、地點）會一併提供給 AI。</span>
+      <textarea id="rawNotes" style="margin-top:8px;min-height:140px" placeholder="例如：&#10;- 11/19 上午在燕巢校區簽約&#10;- 跟○○公司簽產學合作，合作 3 年，共同開設半導體學程&#10;- 校長吳忠信、○○公司總經理○○○出席&#10;- 校長說：希望學生畢業就能接軌產業&#10;- 預計每年培育 60 名學生"></textarea>
+      <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
+        <button type="button" class="small" id="aiDraft">生成新聞稿草稿</button>
+        <button type="button" class="small hidden" id="aiApply" style="background:var(--brand);color:#fff">套用到下方欄位</button>
+        <button type="button" class="small" id="aiSet2">設定 iAI</button>
+      </div>
+      <div class="ai-out" id="draftOut"></div>
+    </div>
     <table class="form">
       <tr><th>* 新聞標題<span class="hint">20 字內</span></th>
         <td><input type="text" id="title"><div class="counter" id="cnt-title"></div></td></tr>
@@ -441,6 +451,7 @@ function check(){
         const after=b.slice(mm.index+ab.length,mm.index+ab.length+2);if(!/^[（(]/.test(after))bad.push(ab)}
       if(bad.length)W.push(`英文縮寫首次出現應註明中英文全名：${bad.slice(0,5).join('、')}`);
     }
+    if(/○○/.test(t+b+val('hl1')+val('hl2')+val('hl3')))W.push('標題、亮點或內文仍有「○○」待補資訊');
     const auth=document.querySelector('[name=auth]:checked');
     if(!auth)E.push('請勾選修改授權');else if(auth.value==='照刊'&&!val('authNote'))E.push('勾選「依原文照刊」請說明審閱定稿情形');
   }
@@ -735,6 +746,68 @@ $('aiRun').onclick=async()=>{
     if(!r.ok)throw new Error(`HTTP ${r.status} ${await r.text()}`);
     const j=await r.json();out.textContent=j.choices?.[0]?.message?.content||JSON.stringify(j);
   }catch(err){out.textContent=`無法連線至高科iAI：${err.message}\n\n可能原因：(1) API 網址、模型名稱或 key 有誤；(2) 不在校園網路內；(3) iAI 尚未開放從外部網頁直接呼叫（CORS）。`}
+};
+
+
+/* ===== AI 協助撰稿 ===== */
+const EXAMPLE=`【範例】
+新聞標題：吳忠信特聘教授接掌高科大 專業領航走向頂尖
+事件亮點：1. 吳忠信特聘教授接任高科大第三任校長就職典禮。2. 教育部次長張廖萬堅、高雄市副市長羅達生等貴賓出席。3. 吳校長任內四大治校藍圖。
+內文首段：全國規模最大的科技大學-國立高雄科技大學（以下簡稱高科大），今（2/1）日於建工校區舉行第三任校長就職典禮。吳忠信特聘教授正式接掌校務，為這所肩負南臺灣發展使命的科技大學，揭開下一個關鍵篇章。
+內文第二段：就職典禮冠蓋雲集，教育部政務次長張廖萬堅、行政院南部聯合服務中心執行長許乃文、高雄市副市長羅達生，以及校友會與產官學界貴賓齊聚觀禮。`;
+const DRAFT_SYS=`你是國立高雄科技大學秘書室公關中心的資深新聞編輯，負責把申請單位提供的零散資訊寫成正式新聞稿。用繁體中文。
+撰寫規範（高科大新聞稿撰寫指引）：
+1. 新聞標題 20 字內，以簡單主標題描述重點，可用全形空格分隔主副句。
+2. 事件亮點條列 3 點內，每點一句。
+3. 內文 800 至 1000 字，倒金字塔結構；首段交代人、事、時、地、物；之後依序為活動內容、貴賓或受訪者引言、意義與後續發展。
+4. 校名首次出現寫「國立高雄科技大學（以下簡稱高科大）」，之後一律稱「高科大」。英文縮寫首次出現註明中英文全名，例如 USR（University Social Responsibility，大學社會責任）。
+5. 人名首次出現寫「單位＋職稱＋姓名」。日期寫法如「今（11/19）日」或「11月19日」。
+6. 參照中央通訊社新聞稿寫作原則：客觀陳述、具體事實，避免堆砌形容詞與宣傳口號。
+7. 【重要】不得捏造資訊中沒有的事實、數據、人名、職稱或引言。資訊不足之處用「○○」標示，並列入「待補」。引言只能使用資訊中提供的說法，可潤飾文句但不可改變原意。
+8. 若資訊不足以寫到 800 字，寧可短一些並在待補中說明缺少哪些資訊，不要用空泛內容灌水。
+
+${EXAMPLE}
+
+只輸出一個 JSON 物件，不要有其他文字或 Markdown，格式：
+{"title":"新聞標題","highlights":["亮點1","亮點2","亮點3"],"body":"內文，段落之間用\\n\\n分隔","missing":["待補資訊1","待補資訊2"]}`;
+let lastDraft=null;
+function parseDraft(t){
+  t=t.replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'');
+  const a=t.indexOf('{'),b=t.lastIndexOf('}');if(a<0||b<a)throw new Error('AI 回傳格式無法解析');
+  const j=JSON.parse(t.slice(a,b+1));if(!j.title||!j.body)throw new Error('AI 回傳內容缺少標題或內文');
+  j.highlights=(j.highlights||[]).slice(0,3);j.missing=j.missing||[];return j;
+}
+$('aiSet2').onclick=()=>$('aiSet').click();
+$('aiDraft').onclick=async()=>{
+  const s=aiLoad(),out=$('draftOut');
+  if(!s.key){$('aiSet').click();return}
+  const notes=$('rawNotes').value.trim();
+  if(chars(notes)<15){out.textContent='請先輸入一些活動資訊（至少一兩句）。';return}
+  const ctx=[`申請單位：${val('unit')||'（未填）'}`,`活動或成果名稱：${val('eventName')||'（未填）'}`,
+    `事件日期：${val('eventDate')?roc(val('eventDate')):'（未填）'}`,`事件地點：${val('eventPlace')||'（未填）'}`,
+    val('guests3')?`出席貴賓：${val('guests3')}`:'',`今天日期：${fmt(today)}`].filter(Boolean).join('\n');
+  out.textContent='AI 撰寫中，約需數十秒…';$('aiApply').classList.add('hidden');$('aiDraft').disabled=true;
+  try{
+    const r=await fetch(s.base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+s.key},
+      body:JSON.stringify({model:s.model,temperature:0.4,messages:[{role:'system',content:DRAFT_SYS},{role:'user',content:`【基本資料】\n${ctx}\n\n【申請單位提供的零散資訊】\n${notes}`}]})});
+    if(!r.ok)throw new Error(`HTTP ${r.status} ${await r.text()}`);
+    const j=await r.json();const raw=j.choices?.[0]?.message?.content||'';
+    let d;try{d=parseDraft(raw)}catch(e){out.textContent=raw||e.message;return}
+    lastDraft=d;
+    out.textContent=`【新聞標題】${d.title}（${chars(d.title)} 字）\n\n【事件亮點】\n${d.highlights.map((h,i)=>`${i+1}. ${h}`).join('\n')}\n\n【內文】（${chars(d.body)} 字）\n${d.body}`+
+      (d.missing.length?`\n\n【待補資訊】\n${d.missing.map(m=>'・'+m).join('\n')}`:'')+
+      `\n\n※ 草稿由 AI 產生，請逐一核對姓名、職稱、數據與引言，並補齊「○○」處。`;
+    $('aiApply').classList.remove('hidden');
+  }catch(err){out.textContent=`無法連線至高科iAI：${err.message}\n\n可能原因：(1) API key 有誤或額度用完；(2) 不在校園網路內；(3) iAI 尚未開放從外部網頁直接呼叫（CORS）。`}
+  finally{$('aiDraft').disabled=false}
+};
+$('aiApply').onclick=()=>{
+  if(!lastDraft)return;
+  const filled=val('title')||val('hl1')||chars($('body').value);
+  if(filled&&!confirm('新聞標題、事件亮點或內文已有內容，要用 AI 草稿覆蓋嗎？'))return;
+  $('title').value=lastDraft.title;['hl1','hl2','hl3'].forEach((id,i)=>$(id).value=lastDraft.highlights[i]||'');
+  $('body').value=lastDraft.body.replace(/\\n/g,'\n');check();
+  $('title').scrollIntoView({behavior:'smooth',block:'center'});
 };
 
 if(!CONFIG.SUBMIT_URL)$('submitBtn').textContent='產生申請表（Word）';
