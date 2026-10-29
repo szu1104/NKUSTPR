@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>新聞資訊上架申請表｜國立高雄科技大學公關中心</title>
+<style>
+:root{
+  --ink:#1c2430; --muted:#5d6878; --line:#cfd6df; --bg:#f4f6f9; --paper:#fff;
+  --brand:#123c7a; --brand-soft:#e7eef8; --ok:#1d7a46; --ok-soft:#e5f4ec;
+  --warn:#9a5b00; --warn-soft:#fff4df; --err:#b3261e; --err-soft:#fdeceb;
+  --radius:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif}
+header{background:var(--brand);color:#fff;padding:22px 16px}
+header .wrap{max-width:1180px;margin:0 auto}
+header small{opacity:.8;display:block;font-size:13px}
+header h1{margin:4px 0 0;font-size:24px;letter-spacing:.04em}
+.layout{max-width:1180px;margin:0 auto;padding:20px 16px 80px;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start}
+@media (max-width:900px){.layout{grid-template-columns:1fr}.side{position:static!important}}
+section.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:18px;overflow:hidden}
+section.card>h2{margin:0;padding:12px 16px;font-size:17px;background:var(--brand-soft);color:var(--brand);border-bottom:1px solid var(--line)}
+section.card>.body{padding:14px 16px}
+.hint{color:var(--muted);font-size:13.5px}
+table.form{width:100%;border-collapse:collapse}
+table.form th,table.form td{border:1px solid var(--line);padding:9px 10px;vertical-align:top;text-align:left}
+table.form th{background:#fafbfc;width:170px;font-weight:600}
+table.form th .hint{font-weight:400;display:block}
+@media (max-width:640px){table.form th,table.form td{display:block;width:100%}table.form th{border-bottom:0}}
+input[type=text],input[type=email],input[type=tel],input[type=date],input[type=time],input[type=url],textarea,select{
+  width:100%;font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink)}
+textarea{min-height:90px;resize:vertical}
+textarea#body{min-height:300px}
+input:focus,textarea:focus{outline:2px solid #8fb0e0;border-color:#8fb0e0}
+label.chk{display:inline-flex;gap:6px;align-items:flex-start;margin:2px 14px 2px 0;cursor:pointer}
+label.chk input{margin-top:5px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media (max-width:640px){.row2,.row3{grid-template-columns:1fr}}
+.inline-in{display:inline-block;width:auto;min-width:180px;margin-left:4px}
+.status{font-size:13px;font-weight:600;white-space:nowrap}
+.status.ok{color:var(--ok)}.status.bad{color:var(--err)}.status.wait{color:var(--muted);font-weight:400}
+.counter{font-size:13px;color:var(--muted);text-align:right;margin-top:3px}
+.counter.bad{color:var(--err)}.counter.ok{color:var(--ok)}
+.notice{border-radius:8px;padding:10px 12px;margin:8px 0;font-size:14.5px}
+.notice.info{background:var(--brand-soft)}
+.notice.warn{background:var(--warn-soft);color:#5c3b00}
+.notice.err{background:var(--err-soft);color:#6d1712}
+.hidden{display:none!important}
+table.route{width:100%;border-collapse:collapse;font-size:14px}
+table.route td,table.route th{border:1px solid var(--line);padding:7px 9px;text-align:left}
+table.route tr.active{background:var(--ok-soft)}
+table.route tr.dim{color:#9aa3ae}
+.side{position:sticky;top:16px}
+.side .panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+.side h3{margin:0 0 8px;font-size:16px}
+.side ul{list-style:none;margin:0;padding:0;font-size:14px}
+.side li{padding:6px 8px;border-radius:6px;margin-bottom:5px}
+.side li.e{background:var(--err-soft);color:#6d1712}
+.side li.w{background:var(--warn-soft);color:#5c3b00}
+.side li.i{background:var(--brand-soft)}
+.side li.k{background:var(--ok-soft);color:#0f4a2a}
+.tally{display:flex;gap:8px;margin-bottom:10px;font-size:13px}
+.tally span{padding:2px 8px;border-radius:99px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--brand);padding:9px 14px;background:#fff;color:var(--brand)}
+button.primary{background:var(--brand);color:#fff;width:100%;margin-top:10px;font-weight:600}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.small{padding:5px 10px;font-size:14px}
+.photo-res{font-size:13.5px;margin-top:8px}
+.photo-res div{padding:5px 8px;border-radius:6px;margin-bottom:4px}
+.photo-res .pass{background:var(--ok-soft)}.photo-res .fail{background:var(--err-soft)}
+.caps td:first-child{width:70px;text-align:center;color:var(--muted)}
+.grey th,.grey td{color:#8b95a1;background:#fafafa}
+.ai-box{border:1px dashed #9db4d8;border-radius:8px;padding:10px 12px;margin-top:10px;background:#f9fbfe}
+.ai-out{white-space:pre-wrap;font-size:14.5px;margin-top:8px;max-height:420px;overflow:auto}
+dialog{border:1px solid var(--line);border-radius:12px;max-width:520px;width:92vw;padding:18px}
+dialog::backdrop{background:rgba(10,20,40,.35)}
+.result{margin-top:10px}
+.result a{display:block;margin-top:6px}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
+@media print{header,.side,.ai-box,button{display:none!important}.layout{display:block}body{background:#fff}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <small>國立高雄科技大學｜秘書室公關中心｜BC03附表（修訂日期：115年10月28日）</small>
+  <h1>新聞資訊上架申請表</h1>
+</div></header>
+
+<div class="layout">
+<main id="form">
+
+<!-- 寄送方式 -->
+<section class="card">
+  <h2>寄送方式</h2>
+  <div class="body">
+    <p class="hint">依勾選的申請項目自動分流，以下亮起的列即本次申請的收件人。</p>
+    <table class="route">
+      <tr><th>申請項目</th><th>收件人</th></tr>
+      <tr id="route-news" class="dim"><td>校內稿、校外稿、邀請媒體到校採訪、無預定日期之成果報導</td><td>正本：公務信箱 bcoffice01@nkust.edu.tw<br>副本：林思吟主任、楊豐榮資深經理</td></tr>
+      <tr id="route-social" class="dim"><td>本校官方 Facebook／Instagram</td><td>鄭婷專案副理、鄭潔珊專案副理</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- 一、申請項目 -->
+<section class="card">
+  <h2>一、申請項目（可複選）</h2>
+  <div class="body">
+    <p class="hint">期限以日曆天計，自收件日（今天：<b id="today-label"></b>）起算；事件日指活動舉行日或成果擬公布日。</p>
+    <table class="form">
+      <tr><th>校內稿<span class="hint">校官網新聞</span></th>
+        <td><label class="chk"><input type="checkbox" data-cat="internal">申請</label>
+          <div class="hint">最遲：事件日前 10 日　<span class="status" id="st-internal"></span></div></td></tr>
+      <tr><th>校外稿<span class="hint">對外媒體群組</span></th>
+        <td><label class="chk"><input type="checkbox" data-cat="external">申請</label>
+          <input type="text" id="externalReason" class="inline-in" placeholder="理由（必填）">
+          <div class="hint">最遲：事件日前 14 日　<span class="status" id="st-external"></span></div>
+          <div class="notice info hidden" id="note-external">校外稿以校級重要議題為原則（如全國性或國際性獲獎、重大計畫成果、產學合作、國際交流及校級典禮）；未獲同意者，改以校內稿刊登。</div></td></tr>
+      <tr><th>邀請媒體到校採訪<span class="hint">含記者會、校級活動之媒體接待、拍攝</span></th>
+        <td><label class="chk"><input type="checkbox" data-cat="notice">採訪通知</label>
+          <span class="hint">最遲：事件日前 14 日　<span class="status" id="st-notice"></span></span><br>
+          <label class="chk"><input type="checkbox" data-cat="staff">派員出席</label>
+          <input type="text" id="staffNeeds" class="inline-in" placeholder="需求項目（如媒體接待、攝影）">
+          <span class="hint">最遲：事件日前 21 日　<span class="status" id="st-staff"></span></span>
+          <div class="notice info hidden" id="note-staff">派員出席以校級活動為原則，公關中心將於評估結果中回覆是否派員。</div></td></tr>
+      <tr><th>無預定日期之成果報導</th>
+        <td><label class="chk"><input type="checkbox" data-cat="result">申請</label>
+          <div id="resultTypes" class="hidden">
+            <label class="chk"><input type="checkbox" name="resultType" value="論文發表">論文發表</label>
+            <label class="chk"><input type="checkbox" name="resultType" value="技術轉移">技術轉移</label>
+            <label class="chk"><input type="checkbox" name="resultType" value="產學合作">產學合作</label>
+            <label class="chk"><input type="checkbox" name="resultType" value="其他" id="resultOtherChk">其他</label>
+            <input type="text" id="resultOther" class="inline-in" placeholder="其他類型">
+            <div><label class="chk"><input type="checkbox" id="resultPublic">內容已公開，或已經合作單位同意發佈（必勾）</label></div>
+          </div>
+          <div class="hint">隨時提供，由公關中心依排程安排上架日</div></td></tr>
+      <tr><th>本校官方 Facebook／Instagram</th>
+        <td><label class="chk"><input type="checkbox" data-cat="fbPre">活動預告（報名、宣傳）</label>
+          <input type="date" id="postDate" class="inline-in" title="預定發文日">
+          <span class="hint">預定發文日前 3 日，並附確認版圖卡　<span class="status" id="st-fbPre"></span></span><br>
+          <label class="chk"><input type="checkbox" data-cat="fbPost">活動花絮、成果</label>
+          <span class="hint">事件日後 1 日內提供照片及重點文字　<span class="status" id="st-fbPost"></span></span><br>
+          <label class="chk"><input type="checkbox" data-cat="fbBig">大型企劃（直播、短影音、抽獎、系列宣傳）</label>
+          <span class="hint">事件日前 30 日　<span class="status" id="st-fbBig"></span></span>
+          <div class="notice info hidden" id="note-fbBig">社群宣傳以本校官方平台為限；抽獎活動由申請單位自辦，公關中心協助宣傳。如有媒體宣傳經費規劃，請另洽公關中心。</div></td></tr>
+      <tr><th>其他需求</th>
+        <td><label class="chk"><input type="checkbox" id="redirHonor">榮譽肯定／校官網 Banner</label>
+          <label class="chk"><input type="checkbox" id="redirCrisis">聲明稿、回應媒體詢問</label>
+          <div class="notice warn hidden" id="note-honor">榮譽肯定及校官網 Banner 不適用本表，請依「BC04 校官網首頁資訊刊登作業程序」，至校務系統「電算中心電子表單申請系統」之「校園網頁建置修改申請」提出。</div>
+          <div class="notice warn hidden" id="note-crisis">重大事件或負面輿情之媒體因應不適用本表，請依「BC01 重大事件媒體處理作業程序」辦理，並直接聯繫公關中心。</div></td></tr>
+    </table>
+    <div class="notice warn hidden" id="overdueBox">
+      <b>部分項目已逾申請期限。</b>依 BC03，逾申請期限或已逾新聞時效者，公關中心得退回或改以其他管道刊登。<br>
+      <label class="chk"><input type="checkbox" id="overdueAck">我了解，仍要提出申請</label>
+    </div>
+  </div>
+</section>
+
+<!-- 二、基本資料 -->
+<section class="card">
+  <h2>二、基本資料（* 為必填）</h2>
+  <div class="body">
+    <table class="form">
+      <tr><th>* 申請單位</th><td><input type="text" id="unit"></td></tr>
+      <tr><th>* 聯絡窗口</th><td><div class="row3">
+        <input type="text" id="cName" placeholder="姓名">
+        <input type="tel" id="cPhone" placeholder="分機／手機">
+        <input type="email" id="cEmail" placeholder="Email"></div></td></tr>
+      <tr><th>* 活動或成果名稱</th><td><input type="text" id="eventName"></td></tr>
+      <tr><th>事件日期<span class="hint">活動舉行日或成果擬公布日；無預定日期之成果報導免填</span></th>
+        <td><input type="date" id="eventDate"></td></tr>
+      <tr><th>事件地點<span class="hint">有活動者填寫</span></th><td><input type="text" id="eventPlace"></td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- 三、新聞稿 -->
+<section class="card hidden" id="sec3">
+  <h2>三、新聞稿（校內稿、校外稿、到校採訪、成果報導填寫）</h2>
+  <div class="body">
+    <table class="form">
+      <tr><th>* 新聞標題<span class="hint">20 字內</span></th>
+        <td><input type="text" id="title"><div class="counter" id="cnt-title"></div></td></tr>
+      <tr><th>* 事件亮點<span class="hint">條列 3 點內</span></th>
+        <td><input type="text" id="hl1" placeholder="1."><input type="text" id="hl2" placeholder="2." style="margin-top:6px"><input type="text" id="hl3" placeholder="3." style="margin-top:6px"></td></tr>
+      <tr><th>出席貴賓<span class="hint">單位＋職稱＋姓名；一級單位主管以上須列出</span></th>
+        <td><textarea id="guests3" style="min-height:60px"></textarea></td></tr>
+      <tr><th>* 初稿內文<span class="hint">800 至 1000 字</span></th>
+        <td><textarea id="body" placeholder="首段交代人、事、時、地、物；校名首次寫「國立高雄科技大學（以下簡稱高科大）」。"></textarea>
+          <div class="counter" id="cnt-body"></div>
+          <div class="ai-box">
+            <b>AI 稿件建議（高科iAI）</b> <span class="hint">使用你自己的 iAI API key，扣你自己的額度；key 只存在你的瀏覽器。</span><br>
+            <button type="button" class="small" id="aiRun">請 AI 依撰寫指引檢視初稿</button>
+            <button type="button" class="small" id="aiSet">設定 iAI</button>
+            <div class="ai-out" id="aiOut"></div>
+          </div></td></tr>
+      <tr><th>* 修改授權</th>
+        <td><label class="chk"><input type="radio" name="auth" value="照刊">無須修改，請依原文照刊</label>
+          <input type="text" id="authNote" class="inline-in" placeholder="說明（如已經合作單位審閱定稿）"><br>
+          <span class="hint">如文稿已經合作單位、主管機關或受訪者審閱定稿，請勾選並說明</span><br>
+          <label class="chk"><input type="radio" name="auth" value="可修改">可修改，修改後請回傳申請單位確認</label></td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- 四、邀請媒體 -->
+<section class="card hidden" id="sec4">
+  <h2>四、邀請媒體到校採訪（申請採訪通知、辦理記者會或派員出席者填寫）</h2>
+  <div class="body">
+    <table class="form">
+      <tr><th>* 活動流程<span class="hint">時間＋流程；或另附流程表</span></th><td><textarea id="flow"></textarea></td></tr>
+      <tr><th>活動結束時間</th><td><input type="time" id="endTime" style="max-width:180px"><div id="mealNote" class="notice info hidden"></div></td></tr>
+      <tr><th>出席貴賓<span class="hint">單位＋職稱＋姓名；一級單位主管以上須列出</span></th><td><textarea id="guests4" style="min-height:60px"></textarea></td></tr>
+      <tr><th>計畫名稱<span class="hint">須標註補助計畫者填寫</span></th><td><input type="text" id="project"></td></tr>
+      <tr><th>* 採訪重點<span class="hint">條列 3 點內</span></th>
+        <td><input type="text" id="fc1" placeholder="1."><input type="text" id="fc2" placeholder="2." style="margin-top:6px"><input type="text" id="fc3" placeholder="3." style="margin-top:6px"></td></tr>
+      <tr><th>* 現場聯絡人</th><td><div class="row2"><input type="text" id="siteName" placeholder="姓名"><input type="tel" id="sitePhone" placeholder="手機"></div></td></tr>
+    </table>
+    <div class="notice info">申請單位準備記者會紀念品；媒體是否出席由媒體自行判斷，公關中心不保證露出。活動後請提供媒體出席名單或簽到表。</div>
+  </div>
+</section>
+
+<!-- 五、社群素材 -->
+<section class="card hidden" id="sec5">
+  <h2>五、社群素材（申請 Facebook／Instagram 者填寫）</h2>
+  <div class="body">
+    <table class="form">
+      <tr><th>* 貼文內容</th><td><textarea id="postText" placeholder="提供貼文文案或重點；含活動名稱、日期、地點等，由公關中心依平台改寫"></textarea></td></tr>
+      <tr><th>相關連結</th><td><input type="url" id="postLink" placeholder="如報名網址；無則免填"></td></tr>
+      <tr><th>素材檔名／下載連結</th><td><input type="text" id="assets" placeholder="活動預告附確認版圖卡；花絮、成果附照片"></td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- 六、照片及圖說 -->
+<section class="card hidden" id="sec6">
+  <h2>六、照片及圖說</h2>
+  <div class="body">
+    <div class="notice info">照片規格：橫式為主，寬高比 3:2；長邊 3000 像素以上（如 3000×2000）；JPG 原檔，單檔 2MB 以上。新聞稿 5 張以內；社群貼文可提供多張供挑選。以簽約、頒獎、操作、互動等動態畫面為主，團體合照至多 1 張。</div>
+    <table class="form">
+      <tr><th>照片自我檢核<span class="hint">選取照片即可檢查規格，檔案不會上傳</span></th>
+        <td><input type="file" id="photoFiles" accept="image/*" multiple><div class="photo-res" id="photoRes"></div></td></tr>
+      <tr><th>* 照片下載連結<span class="hint">雲端資料夾連結，或註明另檔寄送</span></th><td><input type="text" id="photoLink"></td></tr>
+    </table>
+    <table class="form caps" id="capTable" style="margin-top:10px">
+      <tr><th style="width:70px">編號</th><th>新聞圖說（10–40 字；標註單位、職稱、姓名及位置，如左一、右二；社群照片可免填）</th></tr>
+    </table>
+    <button type="button" class="small" id="addCap" style="margin-top:8px">＋ 增列圖說</button>
+  </div>
+</section>
+
+<!-- 確認事項 -->
+<section class="card hidden" id="secConfirm">
+  <h2>確認事項</h2>
+  <div class="body">
+    <label class="chk" id="cf-check-w"><input type="checkbox" id="cfCheck">已核實新聞稿內容，尤以姓名、單位、職稱、專有名詞及數據；引述受訪者發言已經本人確認。</label><br>
+    <label class="chk" id="cf-portrait-w"><input type="checkbox" id="cfPortrait">照片中人物肖像已取得授權或具合法使用依據；非本校拍攝之照片已取得授權並註明出處。</label><br>
+    <label class="chk"><input type="checkbox" id="cfDup">本則訊息尚未自行發送媒體、未由校外單位發佈，亦未經媒體報導。</label>
+    <div class="notice warn hidden" id="dupNote">已自行發送媒體、由校外單位發佈或已經媒體報導之新聞，以不重複發佈為原則。</div>
+  </div>
+</section>
+
+<!-- 七、公關中心評估意見 -->
+<section class="card">
+  <h2>七、公關中心評估意見（公關中心填寫）</h2>
+  <div class="body">
+    <table class="form grey">
+      <tr><th>收件及上架</th><td>收件、預定上架日期及承辦人由公關中心填寫。上架日遇假日順延。</td></tr>
+      <tr><th>評估結果</th><td>退回或改變刊登方式／補件／潤修／照刊</td></tr>
+      <tr><th>校外稿</th><td>同意發送對外媒體群組／改以校內稿刊登</td></tr>
+      <tr><th>派員出席</th><td>派員／不派員（活動照片及出席媒體名單由申請單位提供）</td></tr>
+    </table>
+    <p class="hint">回覆期限（工作日）：社群時效稿件 1 日內；一般稿件 2 日內；需協調資源之稿件（到校採訪、大型企劃）3 日內。</p>
+  </div>
+</section>
+</main>
+
+<aside class="side">
+  <div class="panel">
+    <h3>即時檢核</h3>
+    <div class="tally"><span style="background:var(--err-soft)" id="tE">0 項必須修正</span><span style="background:var(--warn-soft)" id="tW">0 項提醒</span></div>
+    <ul id="checkList"></ul>
+    <button class="primary" id="submitBtn" disabled>送出申請</button>
+    <div class="result" id="result"></div>
+    <p class="hint" style="margin-top:10px">紅色項目須修正才能送出；黃色項目不擋送出，但可能被通知補件或改變刊登方式。撰寫問題請洽楊豐榮資深經理（分機 31021）。</p>
+  </div>
+</aside>
+</div>
+
+<dialog id="aiDlg">
+  <h3 style="margin-top:0">高科iAI 設定</h3>
+  <p class="hint">以下資訊請至高科iAI 入口網站的使用說明頁查詢。設定只存在這台電腦的瀏覽器，不會送給公關中心。</p>
+  <label>API 網址（Base URL）<input type="url" id="aiBase" placeholder="例如 https://…/v1"></label><br><br>
+  <label>模型名稱<input type="text" id="aiModel"></label><br><br>
+  <label>你的 API key<input type="password" id="aiKey"></label>
+  <div style="margin-top:14px;display:flex;gap:8px;justify-content:flex-end">
+    <button type="button" id="aiClear">清除</button>
+    <button type="button" id="aiSave" style="background:var(--brand);color:#fff">儲存</button>
+  </div>
+</dialog>
+
+<footer>國立高雄科技大學 秘書室公關中心｜依 BC03 新聞稿發佈及新媒體整合應用作業程序（115.10.28）</footer>
+
+<script>
+/* ===== 設定區：部署時只需修改這裡 ===== */
+const CONFIG = {
+  // Google Apps Script 網頁應用程式網址；留空時改為「下載申請表＋開啟郵件」
+  SUBMIT_URL: '',
+  ROUTES: {
+    news:   { to: ['bcoffice01@nkust.edu.tw'], cc: ['szu1104@nkust.edu.tw','mus2026@nkust.edu.tw'], label: '新聞（校內稿／校外稿／到校採訪／成果報導）' },
+    social: { to: ['yulanda@nkust.edu.tw','jessica12227@nkust.edu.tw'], cc: [], label: '官方 Facebook／Instagram' }
+  },
+  DEADLINES: { internal:10, external:14, notice:14, staff:21, fbBig:30, fbPre:3 },
+  CAPTION_MIN: 10, CAPTION_MAX: 40, NEWS_PHOTO_MAX: 5
+};
+const CAT_NAME = {internal:'校內稿',external:'校外稿',notice:'採訪通知',staff:'派員出席',result:'無預定日期之成果報導',fbPre:'FB/IG 活動預告',fbPost:'FB/IG 活動花絮、成果',fbBig:'FB/IG 大型企劃'};
+const NEWS_CATS=['internal','external','notice','staff','result'], SOCIAL_CATS=['fbPre','fbPost','fbBig'];
+
+const $=id=>document.getElementById(id);
+const val=id=>($(id)?.value||'').trim();
+const today=new Date(); today.setHours(0,0,0,0);
+$('today-label').textContent=fmt(today);
+function fmt(d){return `${d.getFullYear()-1911}年${d.getMonth()+1}月${d.getDate()}日`}
+function parseDate(s){if(!s)return null;const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
+function diffDays(a,b){return Math.round((a-b)/86400000)}
+const chars=s=>s.replace(/\s/g,'').length;
+function cats(){return [...document.querySelectorAll('[data-cat]')].filter(c=>c.checked).map(c=>c.dataset.cat)}
+
+let photoInfo=[];
+
+/* 圖說列 */
+function addCaption(){const t=$('capTable');const n=t.rows.length;const r=t.insertRow();r.innerHTML=`<td>圖${n}</td><td><input type="text" class="cap"><div class="counter"></div></td>`;r.querySelector('input').addEventListener('input',check)}
+for(let i=0;i<5;i++)addCaption();
+$('addCap').onclick=()=>{addCaption();check()};
+
+/* 照片檢核 */
+$('photoFiles').addEventListener('change',async e=>{
+  photoInfo=[];const files=[...e.target.files];
+  for(const f of files){
+    const info={name:f.name,size:f.size,jpg:/jpe?g$/i.test(f.type)||/\.jpe?g$/i.test(f.name)};
+    try{const url=URL.createObjectURL(f);const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url});
+      info.w=img.naturalWidth;info.h=img.naturalHeight;URL.revokeObjectURL(url)}catch{info.w=0;info.h=0}
+    const p=[];
+    if(!info.jpg)p.push('非 JPG 檔');
+    if(info.size<2*1024*1024)p.push(`檔案 ${(info.size/1048576).toFixed(1)}MB，未達 2MB`);
+    const L=Math.max(info.w,info.h);if(L<3000)p.push(`長邊 ${L}px，未達 3000px`);
+    if(info.w<info.h)p.push('直式照片（建議橫式）');
+    const ratio=Math.max(info.w,info.h)/Math.max(1,Math.min(info.w,info.h));if(Math.abs(ratio-1.5)>0.05)p.push(`比例 ${ratio.toFixed(2)}:1，非 3:2`);
+    info.problems=p;photoInfo.push(info)}
+  $('photoRes').innerHTML=photoInfo.map(i=>`<div class="${i.problems.length?'fail':'pass'}">${i.problems.length?'✗':'✓'} ${i.name}（${i.w}×${i.h}，${(i.size/1048576).toFixed(1)}MB）${i.problems.length?'：'+i.problems.join('；'):''}</div>`).join('');
+  check();
+});
+
+/* 主檢核 */
+function check(){
+  const E=[],W=[],I=[];const c=cats();
+  const isNews=c.some(x=>NEWS_CATS.includes(x)), isSocial=c.some(x=>SOCIAL_CATS.includes(x));
+  const needS3=c.some(x=>['internal','external','notice','staff','result'].includes(x));
+  const needS4=c.includes('notice')||c.includes('staff');
+  $('sec3').classList.toggle('hidden',!needS3);
+  $('sec4').classList.toggle('hidden',!needS4);
+  $('sec5').classList.toggle('hidden',!isSocial);
+  $('sec6').classList.toggle('hidden',!(isNews||c.includes('fbPost')));
+  $('secConfirm').classList.toggle('hidden',!c.length);
+  $('route-news').className=isNews?'active':'dim';
+  $('route-social').className=isSocial?'active':'dim';
+  $('note-external').classList.toggle('hidden',!c.includes('external'));
+  $('note-staff').classList.toggle('hidden',!c.includes('staff'));
+  $('note-fbBig').classList.toggle('hidden',!c.includes('fbBig'));
+  $('resultTypes').classList.toggle('hidden',!c.includes('result'));
+  $('note-honor').classList.toggle('hidden',!$('redirHonor').checked);
+  $('note-crisis').classList.toggle('hidden',!$('redirCrisis').checked);
+  $('dupNote').classList.toggle('hidden',$('cfDup').checked||!c.length);
+
+  if(!c.length){I.push('請先勾選申請項目')}
+  if($('redirHonor').checked)W.push('榮譽肯定／Banner 請改至電子表單系統申請（BC04）');
+  if($('redirCrisis').checked)W.push('聲明稿、回應媒體詢問請依 BC01 辦理');
+
+  /* 期限判定 */
+  const ev=parseDate(val('eventDate'));
+  const needDate=c.some(x=>['internal','external','notice','staff','fbPost','fbBig'].includes(x));
+  let overdue=false;
+  for(const k of Object.keys(CAT_NAME)){const st=$('st-'+k);if(st){st.textContent='';st.className='status'}}
+  if(needDate&&!ev)E.push('請填事件日期（期限依事件日計算）');
+  for(const k of ['internal','external','notice','staff','fbBig']){
+    if(!c.includes(k)||!ev)continue;const d=diffDays(ev,today),need=CONFIG.DEADLINES[k],st=$('st-'+k);
+    if(d>=need){st.textContent=`✓ 距事件日 ${d} 日，符合期限`;st.className='status ok'}
+    else{st.textContent=d<0?`✗ 事件日已過`:`✗ 距事件日僅 ${d} 日（需 ${need} 日）`;st.className='status bad';overdue=true;W.push(`${CAT_NAME[k]}已逾申請期限（需事件日前 ${need} 日）`)}
+  }
+  if(c.includes('fbPre')){const pd=parseDate(val('postDate')),st=$('st-fbPre');
+    if(!pd){E.push('活動預告請填預定發文日')}
+    else{const d=diffDays(pd,today);if(d>=3){st.textContent=`✓ 距發文日 ${d} 日`;st.className='status ok'}else{st.textContent=`✗ 距發文日僅 ${d} 日（需 3 日）`;st.className='status bad';overdue=true;W.push('活動預告已逾申請期限（需發文日前 3 日）')}}
+    if(!val('assets'))E.push('活動預告須附確認版圖卡（第五項素材檔名／連結）')}
+  if(c.includes('fbPost')&&ev){const d=diffDays(today,ev),st=$('st-fbPost');
+    if(d<0){st.textContent='活動尚未舉行';st.className='status wait';W.push('花絮、成果請於活動後 1 日內提供，目前事件日尚未到')}
+    else if(d<=1){st.textContent='✓ 於事件日後 1 日內';st.className='status ok'}
+    else{st.textContent=`✗ 事件日後已 ${d} 日`;st.className='status bad';overdue=true;W.push('花絮、成果已逾時效（事件日後 1 日內）')}}
+  $('overdueBox').classList.toggle('hidden',!overdue);
+  if(overdue&&!$('overdueAck').checked)E.push('部分項目逾期，請勾選「我了解，仍要提出申請」');
+
+  /* 項目附帶欄位 */
+  if(c.includes('external')&&!val('externalReason'))E.push('校外稿請填寫理由');
+  if(c.includes('staff')&&!val('staffNeeds'))E.push('派員出席請填需求項目');
+  if(c.includes('result')){
+    const rt=[...document.querySelectorAll('[name=resultType]:checked')];
+    if(!rt.length)E.push('成果報導請勾選類型');
+    if($('resultOtherChk').checked&&!val('resultOther'))E.push('成果報導「其他」請填寫類型');
+    if(!$('resultPublic').checked)E.push('成果報導須確認內容已公開或經合作單位同意');
+  }
+
+  /* 基本資料 */
+  [['unit','申請單位'],['cName','聯絡窗口姓名'],['cPhone','聯絡窗口分機／手機'],['cEmail','聯絡窗口 Email'],['eventName','活動或成果名稱']].forEach(([id,n])=>{if(c.length&&!val(id))E.push(`請填${n}`)});
+  if(val('cEmail')&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val('cEmail')))E.push('Email 格式不正確');
+
+  /* 三、新聞稿 */
+  if(needS3){
+    const t=val('title'),tl=chars(t);
+    $('cnt-title').textContent=`${tl} / 20 字`;$('cnt-title').className='counter '+(tl>20?'bad':tl?'ok':'');
+    if(!t)E.push('請填新聞標題');else if(tl>20)W.push(`新聞標題 ${tl} 字，超過 20 字`);
+    if(!val('hl1'))E.push('請至少填 1 點事件亮點');
+    const b=$('body').value,bl=chars(b);
+    $('cnt-body').textContent=`${bl} 字（規定 800–1000 字）`;$('cnt-body').className='counter '+(bl&&(bl<800||bl>1000)?'bad':bl?'ok':'');
+    if(!bl)E.push('請填初稿內文');
+    else{
+      if(bl<800||bl>1000)W.push(`內文 ${bl} 字，不在 800–1000 字範圍`);
+      const full=/國立高雄科技大學[（(]以下簡稱高科大[）)]/;const m=b.search(full);
+      if(m<0)W.push('內文首次提及校名應寫「國立高雄科技大學（以下簡稱高科大）」');
+      else{const first=b.indexOf('高科大');if(first>=0&&first<m)W.push('「高科大」在完整校名之前就出現了，首次應寫全稱')}
+      const seen=new Set(),bad=[];
+      for(const mm of b.matchAll(/\b[A-Z][A-Za-z]*[A-Z]+\b/g)){const ab=mm[0];if(seen.has(ab))continue;seen.add(ab);
+        const after=b.slice(mm.index+ab.length,mm.index+ab.length+2);if(!/^[（(]/.test(after))bad.push(ab)}
+      if(bad.length)W.push(`英文縮寫首次出現應註明中英文全名：${bad.slice(0,5).join('、')}`);
+    }
+    const auth=document.querySelector('[name=auth]:checked');
+    if(!auth)E.push('請勾選修改授權');else if(auth.value==='照刊'&&!val('authNote'))E.push('勾選「依原文照刊」請說明審閱定稿情形');
+  }
+
+  /* 四、到校採訪 */
+  if(needS4){
+    if(!val('flow'))E.push('請填活動流程（或註明另附流程表）');
+    if(!val('fc1'))E.push('請至少填 1 點採訪重點');
+    if(!val('siteName')||!val('sitePhone'))E.push('請填現場聯絡人姓名及手機');
+    const et=val('endTime');let meal='';
+    if(et){if(et>'17:30')meal='活動結束晚於 17:30，請準備晚餐餐盒。';else if(et>'11:00')meal='活動結束晚於 11:00，請準備午餐餐盒。'}
+    $('mealNote').textContent=meal;$('mealNote').classList.toggle('hidden',!meal);if(meal)I.push(meal);
+    if(!c.includes('staff'))I.push('未申請派員者，活動照片及出席媒體名單由申請單位提供；活動後新聞稿仍由公關中心發佈');
+  }
+
+  /* 五、社群 */
+  if(isSocial&&!val('postText'))E.push('請填貼文內容或重點');
+
+  /* 六、照片圖說 */
+  if(!$('sec6').classList.contains('hidden')){
+    if(!val('photoLink'))E.push('請提供照片下載連結或註明另檔寄送');
+    const caps=[...document.querySelectorAll('.cap')];let filled=0;
+    caps.forEach((inp,i)=>{const s=inp.value.trim(),l=chars(s),ct=inp.nextElementSibling;
+      if(!s){ct.textContent='';return}filled++;
+      ct.textContent=`${l} 字`;const okLen=l>=CONFIG.CAPTION_MIN&&l<=CONFIG.CAPTION_MAX;ct.className='counter '+(okLen?'ok':'bad');
+      if(!okLen)W.push(`圖${i+1} 圖說 ${l} 字，建議 ${CONFIG.CAPTION_MIN}–${CONFIG.CAPTION_MAX} 字`);
+      if(!/[左右中前後]/.test(s))W.push(`圖${i+1} 圖說未標註人物位置（如左一、右二）`)});
+    if(isNews&&!filled)E.push('新聞稿照片請至少填 1 則圖說');
+    if(isNews&&filled>CONFIG.NEWS_PHOTO_MAX)W.push(`新聞稿照片以 ${CONFIG.NEWS_PHOTO_MAX} 張為限，目前 ${filled} 則圖說`);
+    const badPh=photoInfo.filter(p=>p.problems.length);if(badPh.length)W.push(`${badPh.length} 張照片規格不符（見第六項）`);
+    if(isNews&&photoInfo.length>CONFIG.NEWS_PHOTO_MAX)W.push(`新聞稿照片 ${photoInfo.length} 張，超過 5 張`);
+  }
+
+  /* 確認事項 */
+  if(c.length){
+    $('cf-check-w').classList.toggle('hidden',!needS3);
+    if(needS3&&!$('cfCheck').checked)E.push('請勾選確認已核實新聞稿內容');
+    if(!$('sec6').classList.contains('hidden')&&!$('cfPortrait').checked)E.push('請勾選確認照片肖像授權');
+    if(!$('cfDup').checked)W.push('已自行發送媒體或已經媒體報導之新聞，以不重複發佈為原則');
+  }
+
+  render(E,W,I);return {E,W};
+}
+
+function render(E,W,I){
+  $('tE').textContent=`${E.length} 項必須修正`;$('tW').textContent=`${W.length} 項提醒`;
+  const ok=cats().length&&!E.length;
+  $('checkList').innerHTML=[...E.map(t=>`<li class="e">✗ ${t}</li>`),...W.map(t=>`<li class="w">！${t}</li>`),...I.map(t=>`<li class="i">${t}</li>`),...(ok&&!W.length?['<li class="k">✓ 檢核通過，可以送出</li>']:[])].join('');
+  $('submitBtn').disabled=!ok;
+}
+
+document.getElementById('form').addEventListener('input',check);
+document.getElementById('form').addEventListener('change',check);
+
+/* ===== 送出 ===== */
+function collect(){
+  const c=cats();
+  return {
+    submittedAt:new Date().toISOString(),
+    categories:c.map(k=>CAT_NAME[k]),
+    groups:[...(c.some(x=>NEWS_CATS.includes(x))?['news']:[]),...(c.some(x=>SOCIAL_CATS.includes(x))?['social']:[])],
+    externalReason:val('externalReason'),staffNeeds:val('staffNeeds'),
+    resultTypes:[...document.querySelectorAll('[name=resultType]:checked')].map(x=>x.value==='其他'?'其他：'+val('resultOther'):x.value),
+    postDate:val('postDate'),
+    unit:val('unit'),contact:{name:val('cName'),phone:val('cPhone'),email:val('cEmail')},
+    eventName:val('eventName'),eventDate:val('eventDate'),eventPlace:val('eventPlace'),
+    title:val('title'),highlights:[val('hl1'),val('hl2'),val('hl3')].filter(Boolean),guests:val('guests3'),body:$('body').value.trim(),
+    auth:(document.querySelector('[name=auth]:checked')||{}).value||'',authNote:val('authNote'),
+    flow:val('flow'),endTime:val('endTime'),guests4:val('guests4'),project:val('project'),
+    focus:[val('fc1'),val('fc2'),val('fc3')].filter(Boolean),site:{name:val('siteName'),phone:val('sitePhone')},
+    postText:val('postText'),postLink:val('postLink'),assets:val('assets'),
+    photoLink:val('photoLink'),captions:[...document.querySelectorAll('.cap')].map(x=>x.value.trim()).filter(Boolean),
+    warnings:check().W
+  };
+}
+const esc=s=>String(s??'').replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+function toHTML(d){
+  const row=(k,v)=>v?`<tr><th style="width:150px;text-align:left;background:#f3f5f8">${k}</th><td>${esc(v).replace(/\n/g,'<br>')}</td></tr>`:'';
+  return `<h2 style="text-align:center">國立高雄科技大學 新聞資訊上架申請表</h2>
+<table border="1" cellpadding="6" style="border-collapse:collapse;width:100%;font-size:12pt">
+${row('申請項目',d.categories.join('、'))}${row('校外稿理由',d.externalReason)}${row('派員需求',d.staffNeeds)}${row('成果報導類型',d.resultTypes.join('、'))}${row('預定發文日',d.postDate)}
+${row('申請單位',d.unit)}${row('聯絡窗口',`${d.contact.name}／${d.contact.phone}／${d.contact.email}`)}${row('活動或成果名稱',d.eventName)}${row('事件日期',d.eventDate)}${row('事件地點',d.eventPlace)}
+${row('新聞標題',d.title)}${row('事件亮點',d.highlights.map((h,i)=>`${i+1}. ${h}`).join('\n'))}${row('出席貴賓',d.guests)}${row('初稿內文',d.body)}${row('修改授權',d.auth+(d.authNote?'（'+d.authNote+'）':''))}
+${row('活動流程',d.flow)}${row('活動結束時間',d.endTime)}${row('出席貴賓（採訪）',d.guests4)}${row('計畫名稱',d.project)}${row('採訪重點',d.focus.map((h,i)=>`${i+1}. ${h}`).join('\n'))}${row('現場聯絡人',d.site.name?`${d.site.name}／${d.site.phone}`:'')}
+${row('貼文內容',d.postText)}${row('相關連結',d.postLink)}${row('素材',d.assets)}
+${row('照片連結',d.photoLink)}${row('圖說',d.captions.map((h,i)=>`圖${i+1} ${h}`).join('\n'))}
+${row('系統檢核提醒',d.warnings.join('\n'))}
+</table>`;
+}
+
+$('submitBtn').onclick=async()=>{
+  const d=collect();const res=$('result');
+  if(CONFIG.SUBMIT_URL){
+    $('submitBtn').disabled=true;res.innerHTML='<div class="notice info">送出中…</div>';
+    try{
+      const r=await fetch(CONFIG.SUBMIT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({...d,html:toHTML(d)})});
+      const j=await r.json();
+      if(j.ok)res.innerHTML=`<div class="notice info">已送出，申請編號 <b>${esc(j.id)}</b>。確認信已寄至 ${esc(d.contact.email)}，公關中心將於 1–3 個工作日內回覆評估結果。</div>`;
+      else throw new Error(j.error||'未知錯誤');
+    }catch(err){res.innerHTML=`<div class="notice err">送出失敗：${esc(err.message)}。請改用下方方式寄送。</div>`;fallback(d,res,true)}
+    $('submitBtn').disabled=false;
+  }else fallback(d,res,false);
+};
+function fallback(d,res,append){
+  const name=`新聞資訊上架申請表_${d.unit}_${d.eventName}`.replace(/[\\/:*?"<>|]/g,'');
+  const blob=new Blob(['\ufeff<html><head><meta charset="utf-8"></head><body>'+toHTML(d)+'</body></html>'],{type:'application/msword'});
+  const url=URL.createObjectURL(blob);
+  let h=`<div class="notice info">請下載申請表，於郵件中附上申請表與照片連結寄出：<a href="${url}" download="${name}.doc">⬇ 下載填妥的申請表（Word）</a>`;
+  for(const g of d.groups){const R=CONFIG.ROUTES[g];
+    const href=`mailto:${R.to.join(',')}?${R.cc.length?'cc='+R.cc.join(',')+'&':''}subject=${encodeURIComponent(`【新聞資訊上架申請】${d.unit}－${d.eventName}`)}&body=${encodeURIComponent('申請表如附件，照片連結：'+(d.photoLink||'（另檔寄送）'))}`;
+    h+=`<a href="${href}">✉ 開啟郵件：${R.label}</a>`}
+  h+='</div>';res.innerHTML=append?res.innerHTML+h:h;
+}
+
+/* ===== 高科iAI ===== */
+const AI_KEY='nkust-iai-settings';
+function aiLoad(){try{return JSON.parse(localStorage.getItem(AI_KEY))||{}}catch{return {}}}
+$('aiSet').onclick=()=>{const s=aiLoad();$('aiBase').value=s.base||'';$('aiModel').value=s.model||'';$('aiKey').value=s.key||'';$('aiDlg').showModal()};
+$('aiSave').onclick=()=>{try{localStorage.setItem(AI_KEY,JSON.stringify({base:val('aiBase').replace(/\/+$/,''),model:val('aiModel'),key:val('aiKey')}))}catch{}$('aiDlg').close()};
+$('aiClear').onclick=()=>{try{localStorage.removeItem(AI_KEY)}catch{}$('aiBase').value=$('aiModel').value=$('aiKey').value=''};
+const GUIDE=`你是國立高雄科技大學秘書室公關中心的新聞稿編輯，請依「高科大新聞稿撰寫指引」檢視申請單位的初稿，用繁體中文回覆。
+規範：1.標題20字內，簡單主標題描述重點。2.事件亮點條列3點內。3.內文800至1000字，首段交代人、事、時、地、物。4.校名首次寫「國立高雄科技大學（以下簡稱高科大）」，之後一律稱「高科大」；英文縮寫首次出現應註明中英文全名，例如USR（University Social Responsibility，大學社會責任）。5.引述受訪者發言須經本人確認；姓名、單位、職稱、專有名詞及數據須核實。6.寫作參照中央通訊社新聞稿寫作原則：倒金字塔、客觀陳述、避免宣傳性形容詞堆砌。
+回覆格式：一、整體評估（3句內）；二、逐項檢核（符合／需修正，並說明）；三、建議修改的標題（2個）；四、建議改寫的導言段。不要捏造稿件中沒有的事實；需要申請單位補充的資訊請列為「待補資料」。`;
+$('aiRun').onclick=async()=>{
+  const s=aiLoad(),out=$('aiOut');
+  if(!s.base||!s.key||!s.model){$('aiSet').click();return}
+  if(chars($('body').value)<50){out.textContent='請先填寫初稿內文。';return}
+  out.textContent='AI 檢視中…';
+  const user=`新聞標題：${val('title')}\n事件亮點：${[val('hl1'),val('hl2'),val('hl3')].filter(Boolean).join('；')}\n出席貴賓：${val('guests3')}\n初稿內文：\n${$('body').value}`;
+  try{
+    const r=await fetch(s.base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+s.key},
+      body:JSON.stringify({model:s.model,messages:[{role:'system',content:GUIDE},{role:'user',content:user}],temperature:0.3})});
+    if(!r.ok)throw new Error(`HTTP ${r.status} ${await r.text()}`);
+    const j=await r.json();out.textContent=j.choices?.[0]?.message?.content||JSON.stringify(j);
+  }catch(err){out.textContent=`無法連線至高科iAI：${err.message}\n\n可能原因：(1) API 網址、模型名稱或 key 有誤；(2) 不在校園網路內；(3) iAI 尚未開放從外部網頁直接呼叫（CORS）。`}
+};
+
+check();
+</script>
+</body>
+</html>
