@@ -71,6 +71,16 @@ button.primary{background:var(--brand);color:#fff;width:100%;margin-top:10px;fon
 button:disabled{opacity:.45;cursor:not-allowed}
 button.small{padding:5px 10px;font-size:14px}
 .photo-res{font-size:13.5px;margin-top:8px}
+.pick-btn{display:inline-block;border:1px solid var(--brand);color:var(--brand);border-radius:8px;padding:5px 12px;cursor:pointer;font-size:14px}
+.pick-btn:hover{background:var(--brand-soft)}
+.photo-list{display:grid;gap:8px;margin-top:10px}
+.ph{display:grid;grid-template-columns:28px 72px 1fr 32px;gap:10px;align-items:center;padding:6px 8px;border-radius:8px;font-size:13.5px}
+.ph.pass{background:var(--ok-soft)}.ph.fail{background:var(--warn-soft)}
+.ph img{width:72px;height:48px;object-fit:cover;border-radius:4px;background:#ddd}
+.ph b{color:var(--muted);font-weight:600;text-align:center}
+.x-btn{border:0;background:none;color:var(--muted);font-size:20px;line-height:1;padding:2px 6px;cursor:pointer}
+.x-btn:hover{color:var(--err);background:#fff}
+.up-ok{background:var(--ok-soft);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:14px}
 .photo-res div{padding:5px 8px;border-radius:6px;margin-bottom:4px}
 .photo-res .pass{background:var(--ok-soft)}.photo-res .fail{background:var(--err-soft)}
 .caps td:first-child{width:70px;text-align:center;color:var(--muted)}
@@ -128,10 +138,10 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
       <tr><th>邀請媒體到校採訪<span class="hint">含記者會、校級活動之媒體接待、拍攝</span></th>
         <td><label class="chk"><input type="checkbox" data-cat="notice">採訪通知</label>
           <span class="hint">最遲：事件日前 14 日　<span class="status" id="st-notice"></span></span><br>
-          <label class="chk"><input type="checkbox" data-cat="staff">派員出席</label>
-          <input type="text" id="staffNeeds" class="inline-in" placeholder="需求項目（如媒體接待、攝影）">
+          <label class="chk"><input type="checkbox" data-cat="staff">請公關中心協助</label>
+          <input type="text" id="staffNeeds" class="inline-in" placeholder="協助項目（如媒體接待、攝影、錄影）">
           <span class="hint">最遲：事件日前 21 日　<span class="status" id="st-staff"></span></span>
-          <div class="notice info hidden" id="note-staff">派員出席以校級活動為原則，公關中心將於評估結果中回覆是否派員。</div></td></tr>
+          <div class="notice info hidden" id="note-staff">請公關中心協助以校級活動為原則，公關中心將於評估結果中回覆是否派員協助。</div></td></tr>
       <tr><th>無預定日期之成果報導</th>
         <td><label class="chk"><input type="checkbox" data-cat="result">申請</label>
           <div id="resultTypes" class="hidden">
@@ -192,7 +202,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
       <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
         <button type="button" class="small" id="aiDraft">生成新聞稿草稿</button>
         <button type="button" class="small hidden" id="aiApply" style="background:var(--brand);color:#fff">套用到下方欄位</button>
-        <button type="button" class="small" id="aiSet2">設定 iAI</button>
+        <button type="button" class="small" id="aiSet2">AI 設定</button>
       </div>
       <div class="ai-out" id="draftOut"></div>
       <div class="hint" style="margin-top:6px">※ 套用後，新聞標題、事件亮點和初稿內文都可以在下方欄位直接修改；也可以不套用，只複製需要的段落自行貼上。AI 草稿僅供參考，送出前請逐一核對人名、職稱、數據與引言。</div>
@@ -209,9 +219,9 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
           <div class="hint">撰寫方式請參閱<a href="BC03-writing-guide.pdf" target="_blank" rel="noopener">新聞稿撰寫指引（PDF）</a></div>
           <div class="counter" id="cnt-body"></div>
           <div class="ai-box">
-            <b>AI 稿件建議（高科iAI）</b> <span class="hint">使用你自己的 iAI API key，扣你自己的額度；key 只存在你的瀏覽器。</span><br>
+            <b>AI 稿件建議（高科iAI）</b> <span class="hint ai-mode-hint"></span><br>
             <button type="button" class="small" id="aiRun">請 AI 依撰寫指引檢視初稿</button>
-            <button type="button" class="small" id="aiSet">設定 iAI</button>
+            <button type="button" class="small" id="aiSet">AI 設定</button>
             <div class="ai-out" id="aiOut"></div>
           </div></td></tr>
       <tr><th>* 修改授權</th>
@@ -225,7 +235,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
 
 <!-- 四、邀請媒體 -->
 <section class="card hidden" id="sec4">
-  <h2>四、邀請媒體到校採訪（申請採訪通知、辦理記者會或派員出席者填寫）</h2>
+  <h2>四、邀請媒體到校採訪（申請採訪通知、辦理記者會或請公關中心協助者填寫）</h2>
   <div class="body">
     <table class="form">
       <tr><th>* 活動流程<span class="hint">時間＋流程；或另附流程表</span></th><td><textarea id="flow"></textarea></td></tr>
@@ -251,7 +261,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
       <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
         <button type="button" class="small" id="aiSocial">生成 FB／IG 貼文</button>
         <button type="button" class="small hidden" id="aiSocialApply" style="background:var(--brand);color:#fff">套用到貼文內容</button>
-        <button type="button" class="small" id="aiSet3">設定 iAI</button>
+        <button type="button" class="small" id="aiSet3">AI 設定</button>
       </div>
       <div class="ai-out" id="socialOut"></div>
       <div class="hint" style="margin-top:6px">※ 套用後可在「貼文內容」欄直接修改，也可以只複製需要的版本。公關中心仍會依各平台調整文案；活動資訊、日期與連結請再次核對。</div>
@@ -270,12 +280,15 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
   <div class="body">
     <div class="notice info">照片規格：橫式為主，寬高比 3:2；長邊 3000 像素以上（如 3000×2000）；JPG 原檔，單檔 2MB 以上。新聞稿 5 張以內；社群貼文可提供多張供挑選。以簽約、頒獎、操作、互動等動態畫面為主，團體合照至多 1 張。圖說寫法請參閱<a href="BC03-writing-guide.pdf" target="_blank" rel="noopener">新聞稿撰寫指引（PDF）</a>。</div>
     <table class="form">
-      <tr><th>照片自我檢核<span class="hint">選取照片即可檢查規格，檔案不會上傳</span></th>
-        <td><input type="file" id="photoFiles" accept="image/*" multiple><div class="photo-res" id="photoRes"></div></td></tr>
-      <tr><th>* 照片下載連結<span class="hint">雲端資料夾連結，或註明另檔寄送</span></th><td><input type="text" id="photoLink"></td></tr>
+      <tr><th>上傳照片<span class="hint">選取後會先檢查規格；產生申請表時一併上傳至公關中心雲端</span></th>
+        <td><label class="small pick-btn"><input type="file" id="photoFiles" accept="image/jpeg,image/png,image/heic,image/*" multiple hidden>＋ 選擇照片</label>
+          <span class="hint" id="photoCount"></span>
+          <div class="hint hidden" id="uploadOff">照片上傳功能尚未啟用，請先在下方提供雲端連結。</div>
+          <div class="photo-list" id="photoList"></div></td></tr>
+      <tr><th>照片下載連結<span class="hint">未上傳照片者填寫：雲端資料夾連結，或註明另檔寄送</span></th><td><input type="text" id="photoLink"></td></tr>
     </table>
     <table class="form caps" id="capTable" style="margin-top:10px">
-      <tr><th style="width:70px">編號</th><th>新聞圖說（10–40 字；標註單位、職稱、姓名及位置，如左一、右二；社群照片可免填）</th></tr>
+      <tr><th style="width:70px">編號</th><th>新聞圖說（建議 10–40 字；有人物時標註單位、職稱、姓名及位置，如左一、右二；社群照片可免填）</th><th style="width:44px"></th></tr>
     </table>
     <button type="button" class="small" id="addCap" style="margin-top:8px">＋ 增列圖說</button>
   </div>
@@ -322,13 +335,14 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
 <dialog id="aiDlg">
   <button type="button" class="dlg-x" id="aiClose" aria-label="關閉">×</button>
   <h3 style="margin-top:0">高科iAI 設定</h3>
-  <p class="hint">API 網址和模型已預先填好，只要貼上你自己的 API key 即可。還沒有 key 的話，請至 <a href="https://www.iai.nkust.edu.tw/apply" target="_blank" rel="noopener">高科iAI 申請頁</a> 申請。設定只存在這台電腦的瀏覽器，不會送給公關中心。</p>
-  <label>API 網址（Base URL）<input type="url" id="aiBase"></label><br><br>
+  <p class="hint" id="aiNoteShared">本系統已內建公關中心的高科iAI 帳號，不需要自己的 API key，只要選擇模型即可。</p>
+  <p class="hint" id="aiNotePersonal">API 網址和模型已預先填好，只要貼上你自己的 API key 即可。還沒有 key 的話，請至 <a href="https://www.iai.nkust.edu.tw/apply" target="_blank" rel="noopener">高科iAI 申請頁</a> 申請。設定只存在這台電腦的瀏覽器。</p>
+  <div id="aiBaseRow"><label>API 網址（Base URL）<input type="url" id="aiBase"></label><br><br></div>
   <label>模型名稱
     <div style="display:flex;gap:6px"><select id="aiModel"></select><button type="button" class="small" id="aiList" style="white-space:nowrap">載入可用模型</button></div>
   </label>
   <div class="hint" id="aiListMsg"></div><br>
-  <label>你的 API key<input type="password" id="aiKey" placeholder="貼上 iAI 申請頁複製的 key"></label>
+  <div id="aiKeyRow"><label>你的 API key<input type="password" id="aiKey" placeholder="貼上 iAI 申請頁複製的 key"></label></div>
   <div style="margin-top:14px;display:flex;gap:8px;justify-content:flex-end">
     <button type="button" id="aiClear">清除</button>
     <button type="button" id="aiSave" style="background:var(--brand);color:#fff">儲存</button>
@@ -347,9 +361,14 @@ const CONFIG = {
     social: { to: ['yulanda@nkust.edu.tw','jessica12227@nkust.edu.tw'], cc: [], label: '官方 Facebook／Instagram' }
   },
   DEADLINES: { internal:10, external:14, notice:14, staff:21, fbBig:30, fbPre:3 },
-  CAPTION_MIN: 10, CAPTION_MAX: 40, NEWS_PHOTO_MAX: 5
+  CAPTION_MIN: 10, CAPTION_MAX: 40, NEWS_PHOTO_MAX: 5,
+  // 後端：Google Apps Script（bcoffice03 帳號部署）網址。
+  // 填入後：照片上傳至 Google Drive，AI 功能使用公關中心內建的高科iAI 帳號（申請人不必有 key）。
+  // 留空：停用照片上傳；AI 功能需申請人自行設定 API key。
+  BACKEND_URL: '',
+  PHOTO_MAX_MB: 25
 };
-const CAT_NAME = {internal:'校內稿',external:'校外稿',notice:'採訪通知',staff:'派員出席',result:'無預定日期之成果報導',fbPre:'FB/IG 活動預告',fbPost:'FB/IG 活動花絮、成果',fbBig:'FB/IG 大型企劃'};
+const CAT_NAME = {internal:'校內稿',external:'校外稿',notice:'採訪通知',staff:'請公關中心協助',result:'無預定日期之成果報導',fbPre:'FB/IG 活動預告',fbPost:'FB/IG 活動花絮、成果',fbBig:'FB/IG 大型企劃'};
 const NEWS_CATS=['internal','external','notice','staff','result'], SOCIAL_CATS=['fbPre','fbPost','fbBig'];
 
 const $=id=>document.getElementById(id);
@@ -362,30 +381,58 @@ function diffDays(a,b){return Math.round((a-b)/86400000)}
 const chars=s=>s.replace(/\s/g,'').length;
 function cats(){return [...document.querySelectorAll('[data-cat]')].filter(c=>c.checked).map(c=>c.dataset.cat)}
 
-let photoInfo=[];
+let photos=[];        // {file,name,size,w,h,url,problems}
+let uploaded=null;    // {sig,url,count}
 
-/* 圖說列 */
-function addCaption(){const t=$('capTable');const n=t.rows.length;const r=t.insertRow();r.innerHTML=`<td>圖${n}</td><td><input type="text" class="cap"><div class="counter"></div></td>`;r.querySelector('input').addEventListener('input',check)}
-for(let i=0;i<5;i++)addCaption();
-$('addCap').onclick=()=>{addCaption();check()};
+/* 圖說列：預設 1 列，可增可刪 */
+function renumberCaps(){[...$('capTable').rows].slice(1).forEach((r,i)=>r.cells[0].textContent=`圖${i+1}`)}
+function addCaption(){const t=$('capTable');const r=t.insertRow();
+  r.innerHTML=`<td></td><td><input type="text" class="cap"><div class="counter"></div></td><td style="text-align:center"><button type="button" class="x-btn" title="刪除這則圖說" aria-label="刪除圖說">×</button></td>`;
+  r.querySelector('input').addEventListener('input',check);
+  r.querySelector('.x-btn').onclick=()=>{if(t.rows.length>2)r.remove();else r.querySelector('input').value='';renumberCaps();check()};
+  renumberCaps();return r}
+addCaption();
+$('addCap').onclick=()=>{addCaption().querySelector('input').focus();check()};
 
-/* 照片檢核 */
+/* 照片：選取、規格檢核、刪除 */
+const sigOf=()=>photos.map(p=>p.name+':'+p.size).join('|');
+async function inspect(f){
+  const info={file:f,name:f.name,size:f.size,url:URL.createObjectURL(f),jpg:/jpe?g$/i.test(f.type)||/\.jpe?g$/i.test(f.name)};
+  try{const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=info.url});info.w=img.naturalWidth;info.h=img.naturalHeight}catch{info.w=0;info.h=0}
+  const p=[];
+  if(info.size>CONFIG.PHOTO_MAX_MB*1048576)p.push(`檔案超過 ${CONFIG.PHOTO_MAX_MB}MB，無法上傳`);
+  if(!info.jpg)p.push('非 JPG 檔');
+  if(info.size<2*1024*1024)p.push(`${(info.size/1048576).toFixed(1)}MB，未達 2MB`);
+  if(info.w){const L=Math.max(info.w,info.h);if(L<3000)p.push(`長邊 ${L}px，未達 3000px`);
+    if(info.w<info.h)p.push('直式（建議橫式）');
+    const ratio=L/Math.max(1,Math.min(info.w,info.h));if(Math.abs(ratio-1.5)>0.05)p.push(`比例 ${ratio.toFixed(2)}:1，非 3:2`)}
+  info.problems=p;return info}
+function renderPhotos(){
+  $('photoList').innerHTML='';
+  photos.forEach((p,i)=>{const d=document.createElement('div');d.className='ph '+(p.problems.length?'fail':'pass');
+    d.innerHTML=`<b>圖${i+1}</b><img alt="" src="${p.url}"><div>${esc(p.name)}<br><span class="hint">${p.w?p.w+'×'+p.h+'，':''}${(p.size/1048576).toFixed(1)}MB${p.problems.length?'　！'+esc(p.problems.join('；')):'　✓ 符合規格'}</span></div><button type="button" class="x-btn" title="移除這張照片" aria-label="移除照片">×</button>`;
+    d.querySelector('.x-btn').onclick=()=>{URL.revokeObjectURL(p.url);photos.splice(i,1);renderPhotos();check()};
+    $('photoList').appendChild(d)});
+  $('photoCount').textContent=photos.length?`已選 ${photos.length} 張（依此順序編號為圖1、圖2…，圖說請對應）`:'';
+  if(uploaded&&uploaded.sig!==sigOf())uploaded=null;
+}
 $('photoFiles').addEventListener('change',async e=>{
-  photoInfo=[];const files=[...e.target.files];
-  for(const f of files){
-    const info={name:f.name,size:f.size,jpg:/jpe?g$/i.test(f.type)||/\.jpe?g$/i.test(f.name)};
-    try{const url=URL.createObjectURL(f);const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url});
-      info.w=img.naturalWidth;info.h=img.naturalHeight;URL.revokeObjectURL(url)}catch{info.w=0;info.h=0}
-    const p=[];
-    if(!info.jpg)p.push('非 JPG 檔');
-    if(info.size<2*1024*1024)p.push(`檔案 ${(info.size/1048576).toFixed(1)}MB，未達 2MB`);
-    const L=Math.max(info.w,info.h);if(L<3000)p.push(`長邊 ${L}px，未達 3000px`);
-    if(info.w<info.h)p.push('直式照片（建議橫式）');
-    const ratio=Math.max(info.w,info.h)/Math.max(1,Math.min(info.w,info.h));if(Math.abs(ratio-1.5)>0.05)p.push(`比例 ${ratio.toFixed(2)}:1，非 3:2`);
-    info.problems=p;photoInfo.push(info)}
-  $('photoRes').innerHTML=photoInfo.map(i=>`<div class="${i.problems.length?'fail':'pass'}">${i.problems.length?'✗':'✓'} ${i.name}（${i.w}×${i.h}，${(i.size/1048576).toFixed(1)}MB）${i.problems.length?'：'+i.problems.join('；'):''}</div>`).join('');
-  check();
+  for(const f of [...e.target.files])photos.push(await inspect(f));
+  e.target.value='';renderPhotos();check();
 });
+if(!CONFIG.BACKEND_URL)$('uploadOff').classList.remove('hidden');
+
+/* 上傳至 Google Drive（透過 Apps Script） */
+const toB64=f=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=()=>rej(new Error('讀取檔案失敗'));r.readAsDataURL(f)});
+async function gas(body){const r=await fetch(CONFIG.BACKEND_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});
+  const j=await r.json();if(!j.ok)throw new Error(j.error||'上傳失敗');return j}
+async function uploadPhotos(progress){
+  if(uploaded&&uploaded.sig===sigOf())return uploaded;
+  const f=await gas({action:'folder',unit:val('unit'),eventName:val('eventName'),eventDate:val('eventDate'),contact:val('cName'),email:val('cEmail')});
+  for(let i=0;i<photos.length;i++){const p=photos[i];progress(`上傳照片 ${i+1}／${photos.length}：${p.name}`);
+    const ext=(p.name.match(/\.[^.]+$/)||['.jpg'])[0];
+    await gas({action:'file',folderId:f.folderId,token:f.token,name:`圖${i+1}_${p.name.replace(ext,'')}${ext}`,mimeType:p.file.type||'image/jpeg',data:await toB64(p.file)})}
+  uploaded={sig:sigOf(),url:f.url,count:photos.length};return uploaded}
 
 /* 主檢核 */
 function check(){
@@ -433,7 +480,7 @@ function check(){
 
   /* 項目附帶欄位 */
   if(c.includes('external')&&!val('externalReason'))E.push('校外稿請填寫理由');
-  if(c.includes('staff')&&!val('staffNeeds'))E.push('派員出席請填需求項目');
+  if(c.includes('staff')&&!val('staffNeeds'))E.push('請公關中心協助，請填寫協助項目');
   if(c.includes('result')){
     const rt=[...document.querySelectorAll('[name=resultType]:checked')];
     if(!rt.length)E.push('成果報導請勾選類型');
@@ -477,7 +524,7 @@ function check(){
     const et=val('endTime');let meal='';
     if(et){if(et>'17:30')meal='活動結束晚於 17:30，請準備晚餐餐盒。';else if(et>'11:00')meal='活動結束晚於 11:00，請準備午餐餐盒。'}
     $('mealNote').textContent=meal;$('mealNote').classList.toggle('hidden',!meal);if(meal)I.push(meal);
-    if(!c.includes('staff'))I.push('未申請派員者，活動照片及出席媒體名單由申請單位提供；活動後新聞稿仍由公關中心發佈');
+    if(!c.includes('staff'))I.push('未請公關中心協助者，活動照片及出席媒體名單由申請單位提供；活動後新聞稿仍由公關中心發佈');
   }
 
   /* 五、社群 */
@@ -486,17 +533,18 @@ function check(){
 
   /* 六、照片圖說 */
   if(!$('sec6').classList.contains('hidden')){
-    if(!val('photoLink'))E.push('請提供照片下載連結或註明另檔寄送');
+    const willUpload=CONFIG.BACKEND_URL&&photos.length;
+    if(!willUpload&&!val('photoLink'))E.push(CONFIG.BACKEND_URL?'請上傳照片，或提供照片下載連結／註明另檔寄送':'請提供照片下載連結或註明另檔寄送');
     const caps=[...document.querySelectorAll('.cap')];let filled=0;
     caps.forEach((inp,i)=>{const s=inp.value.trim(),l=chars(s),ct=inp.nextElementSibling;
       if(!s){ct.textContent='';return}filled++;
-      ct.textContent=`${l} 字`;const okLen=l>=CONFIG.CAPTION_MIN&&l<=CONFIG.CAPTION_MAX;ct.className='counter '+(okLen?'ok':'bad');
-      if(!okLen)W.push(`圖${i+1} 圖說 ${l} 字，建議 ${CONFIG.CAPTION_MIN}–${CONFIG.CAPTION_MAX} 字`);
-      if(!/[左右中前後]/.test(s))W.push(`圖${i+1} 圖說未標註人物位置（如左一、右二）`)});
-    if(isNews&&!filled)E.push('新聞稿照片請至少填 1 則圖說');
-    if(isNews&&filled>CONFIG.NEWS_PHOTO_MAX)W.push(`新聞稿照片以 ${CONFIG.NEWS_PHOTO_MAX} 張為限，目前 ${filled} 則圖說`);
-    const badPh=photoInfo.filter(p=>p.problems.length);if(badPh.length)W.push(`${badPh.length} 張照片規格不符（見第六項）`);
-    if(isNews&&photoInfo.length>CONFIG.NEWS_PHOTO_MAX)W.push(`新聞稿照片 ${photoInfo.length} 張，超過 5 張`);
+      ct.textContent=`${l} 字`;ct.className='counter '+(l>CONFIG.CAPTION_MAX?'bad':'ok');
+      if(l>CONFIG.CAPTION_MAX)W.push(`圖${i+1} 圖說 ${l} 字，建議 ${CONFIG.CAPTION_MAX} 字內`)});
+    if(isNews&&!filled)I.push('新聞稿照片建議附上圖說');
+    const nPh=Math.max(photos.length,filled);
+    if(isNews&&nPh>CONFIG.NEWS_PHOTO_MAX)W.push(`新聞稿照片以 ${CONFIG.NEWS_PHOTO_MAX} 張為限，目前 ${nPh} 張`);
+    const tooBig=photos.filter(p=>p.size>CONFIG.PHOTO_MAX_MB*1048576);if(willUpload&&tooBig.length)E.push(`${tooBig.length} 張照片超過 ${CONFIG.PHOTO_MAX_MB}MB，請移除或壓縮`);
+    const badPh=photos.filter(p=>p.problems.length);if(badPh.length)W.push(`${badPh.length} 張照片規格不符（見第六項）`);
   }
 
   /* 確認事項 */
@@ -537,7 +585,7 @@ function collect(){
     flow:val('flow'),endTime:val('endTime'),guests4:val('guests4'),project:val('project'),
     focus:[val('fc1'),val('fc2'),val('fc3')].filter(Boolean),site:{name:val('siteName'),phone:val('sitePhone')},
     postText:val('postText'),postLink:val('postLink'),assets:val('assets'),
-    photoLink:val('photoLink'),captions:[...document.querySelectorAll('.cap')].map(x=>x.value.trim()).filter(Boolean),
+    photoLink:uploaded?`${uploaded.url}（已上傳 ${uploaded.count} 張）`:val('photoLink'),photoCount:photos.length,captions:[...document.querySelectorAll('.cap')].map(x=>x.value.trim()).filter(Boolean),
     warnings:check().W
   };
 }
@@ -546,7 +594,7 @@ function toHTML(d){
   const row=(k,v)=>v?`<tr><th style="width:150px;text-align:left;background:#f3f5f8">${k}</th><td>${esc(v).replace(/\n/g,'<br>')}</td></tr>`:'';
   return `<h2 style="text-align:center">國立高雄科技大學 新聞資訊上架申請表</h2>
 <table border="1" cellpadding="6" style="border-collapse:collapse;width:100%;font-size:12pt">
-${row('申請項目',d.categories.join('、'))}${row('校外稿理由',d.externalReason)}${row('派員需求',d.staffNeeds)}${row('成果報導類型',d.resultTypes.join('、'))}${row('預定發文日',d.postDate)}
+${row('申請項目',d.categories.join('、'))}${row('校外稿理由',d.externalReason)}${row('協助項目',d.staffNeeds)}${row('成果報導類型',d.resultTypes.join('、'))}${row('預定發文日',d.postDate)}
 ${row('申請單位',d.unit)}${row('聯絡窗口',`${d.contact.name}／${d.contact.phone}／${d.contact.email}`)}${row('活動或成果名稱',d.eventName)}${row('事件日期',d.eventDate)}${row('事件地點',d.eventPlace)}
 ${row('新聞標題',d.title)}${row('事件亮點',d.highlights.map((h,i)=>`${i+1}. ${h}`).join('\n'))}${row('出席貴賓',d.guests)}${row('初稿內文',d.body)}${row('修改授權',d.auth+(d.authNote?'（'+d.authNote+'）':''))}
 ${row('活動流程',d.flow)}${row('活動結束時間',d.endTime)}${row('出席貴賓（採訪）',d.guests4)}${row('計畫名稱',d.project)}${row('採訪重點',d.focus.map((h,i)=>`${i+1}. ${h}`).join('\n'))}${row('現場聯絡人',d.site.name?`${d.site.name}／${d.site.phone}`:'')}
@@ -557,7 +605,15 @@ ${row('系統檢核提醒',d.warnings.join('\n'))}
 }
 
 $('submitBtn').onclick=async()=>{
-  const d=collect();const res=$('result');
+  const res=$('result');
+  if(CONFIG.BACKEND_URL&&photos.length&&!$('sec6').classList.contains('hidden')){
+    $('submitBtn').disabled=true;
+    try{await uploadPhotos(m=>res.innerHTML=`<div class="notice info">${esc(m)}…請勿關閉頁面</div>`);
+      res.innerHTML=`<div class="up-ok">✓ 照片已上傳至公關中心雲端（${uploaded.count} 張）</div>`}
+    catch(err){res.innerHTML=`<div class="notice err">照片上傳失敗：${esc(err.message)}。請稍後再按一次，或移除照片改填雲端連結。</div>`;$('submitBtn').disabled=false;return}
+    $('submitBtn').disabled=false;
+  }
+  const d=collect();
   if(CONFIG.SUBMIT_URL){
     $('submitBtn').disabled=true;res.innerHTML='<div class="notice info">送出中…</div>';
     try{
@@ -567,7 +623,7 @@ $('submitBtn').onclick=async()=>{
       else throw new Error(j.error||'未知錯誤');
     }catch(err){res.innerHTML=`<div class="notice err">送出失敗：${esc(err.message)}。請改用下方方式寄送。</div>`;fallback(d,res,true)}
     $('submitBtn').disabled=false;
-  }else fallback(d,res,false);
+  }else fallback(d,res,!!uploaded);
 };
 async function fallback(d,res,append){
   const name=`新聞資訊上架申請表_${d.unit}_${d.eventName}`.replace(/[\\/:*?"<>|]/g,'');
@@ -576,7 +632,7 @@ async function fallback(d,res,append){
     const blob=await buildDocx(d);
     const url=URL.createObjectURL(blob);
     const a=document.createElement('a');a.href=url;a.download=name+'.docx';document.body.appendChild(a);a.click();a.remove();
-    h=`<div class="notice info">申請表已下載。請將申請表與照片（或照片連結）寄送至以下信箱：<a href="${url}" download="${name}.docx">⬇ 重新下載申請表（Word）</a>`;
+    h=`<div class="notice info">申請表已下載。請將申請表寄送至以下信箱${uploaded?'（照片已上傳，不必另附）':'，並附上照片或照片連結'}：<a href="${url}" download="${name}.docx">⬇ 重新下載申請表（Word）</a>`;
   }catch(err){h=`<div class="notice err">申請表產生失敗：${esc(err.message)}，請重新整理頁面後再試。`}
   for(const g of d.groups){const R=CONFIG.ROUTES[g];
     const href=`mailto:${R.to.join(',')}?${R.cc.length?'cc='+R.cc.join(',')+'&':''}subject=${encodeURIComponent(`【新聞資訊上架申請】${d.unit}－${d.eventName}`)}&body=${encodeURIComponent('申請表如附件，照片連結：'+(d.photoLink||'（另檔寄送）'))}`;
@@ -638,7 +694,7 @@ async function buildDocx(d){
     if(has('external')){setCell(cells(r[2])[1],[`■ 申請（理由：${d.externalReason}）`]);setCell(cells(r[2])[2],['事件日前 14 日'])}else drop(r[2]);
     if(has('notice')||has('staff')){const a=[],b=[];
       if(has('notice')){a.push('■ 採訪通知');b.push('事件日前 14 日')}
-      if(has('staff')){a.push(`■ 派員出席（需求項目：${d.staffNeeds}）`);b.push('事件日前 21 日')}
+      if(has('staff')){a.push(`■ 請公關中心協助（協助項目：${d.staffNeeds}）`);b.push('事件日前 21 日')}
       setCell(cells(r[3])[1],a);setCell(cells(r[3])[2],b)}else drop(r[3]);
     if(has('result')){setCell(cells(r[4])[1],[d.resultTypes.map(x=>'■ '+x).join('　')]);setCell(cells(r[4])[2],['隨時提供'])}else drop(r[4]);
     if(isSocial){const a=[],b=[];
@@ -725,6 +781,20 @@ async function buildDocx(d){
 const AI_KEY='nkust-iai-settings';
 const AI_DEFAULT={base:'https://www.iai.nkust.edu.tw/aihub/v1',models:['Furen-large','Furen-max']};
 function aiLoad(){let s={};try{s=JSON.parse(localStorage.getItem(AI_KEY))||{}}catch{}return {base:s.base||AI_DEFAULT.base,model:s.model||AI_DEFAULT.models[0],key:s.key||'',models:s.models||AI_DEFAULT.models}}
+const SHARED=!!CONFIG.BACKEND_URL;
+const aiReady=()=>SHARED||!!aiLoad().key;
+async function aiChat(messages,temperature){
+  const s=aiLoad();
+  if(SHARED){const j=await gas({action:'ai',model:s.model,messages,temperature});return j.content}
+  const r=await fetch(s.base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+s.key},
+    body:JSON.stringify({model:s.model,messages,temperature})});
+  if(!r.ok)throw new Error(`HTTP ${r.status} ${await r.text()}`);
+  const j=await r.json();return j.choices?.[0]?.message?.content||'';
+}
+const aiErr=err=>SHARED?`AI 暫時無法使用：${err.message}\n\n請稍後再試；若持續發生，請洽公關中心。`
+  :`無法連線至高科iAI：${err.message}\n\n可能原因：(1) API key 有誤或額度用完；(2) 不在校園網路內；(3) iAI 尚未開放從外部網頁直接呼叫（CORS）。`;
+['aiNoteShared','aiNotePersonal','aiBaseRow','aiKeyRow'].forEach(id=>$(id).classList.toggle('hidden',id==='aiNoteShared'?!SHARED:SHARED));
+document.querySelectorAll('.ai-mode-hint').forEach(h=>h.textContent=SHARED?'由公關中心提供高科iAI 服務，不需要自己的 key。':'使用你自己的 iAI API key，扣你自己的額度；key 只存在你的瀏覽器。');
 function normBase(u){u=(u||'').trim().replace(/\/+$/,'').replace(/\/chat\/completions$/,'');if(u&&!/\/v1$/.test(u))u+='/v1';return u}
 function fillModels(list,sel){const m=$('aiModel');m.innerHTML='';[...new Set(list)].forEach(x=>{const o=document.createElement('option');o.value=o.textContent=x;m.appendChild(o)});if(sel&&list.includes(sel))m.value=sel}
 $('aiSet').onclick=()=>{const s=aiLoad();$('aiBase').value=s.base;fillModels(s.models,s.model);$('aiKey').value=s.key;$('aiListMsg').textContent='';$('aiDlg').showModal()};
@@ -735,6 +805,9 @@ $('aiSave').onclick=()=>{const models=[...$('aiModel').options].map(o=>o.value);
 $('aiClear').onclick=()=>{try{localStorage.removeItem(AI_KEY)}catch{}$('aiBase').value=AI_DEFAULT.base;fillModels(AI_DEFAULT.models);$('aiKey').value='';$('aiListMsg').textContent=''};
 $('aiList').onclick=async()=>{
   const base=normBase(val('aiBase')),key=val('aiKey'),msg=$('aiListMsg');
+  if(SHARED){msg.textContent='載入中…';
+    try{const j=await gas({action:'models'});fillModels(j.models,$('aiModel').value);msg.textContent=`已載入 ${j.models.length} 個對話模型。`}
+    catch(err){msg.textContent=`無法載入模型列表（${err.message}），可先使用預設的 Furen-large。`}return}
   if(!key){msg.textContent='請先貼上 API key。';return}
   msg.textContent='載入中…';
   try{const r=await fetch(base+'/models',{headers:{'Authorization':'Bearer '+key,'accept':'application/json'}});
@@ -750,16 +823,13 @@ const GUIDE=`你是國立高雄科技大學秘書室公關中心的新聞稿編�
 回覆格式：一、整體評估（3句內）；二、逐項檢核（符合／需修正，並說明）；三、建議修改的標題（2個）；四、建議改寫的導言段。不要捏造稿件中沒有的事實；需要申請單位補充的資訊請列為「待補資料」。`;
 $('aiRun').onclick=async()=>{
   const s=aiLoad(),out=$('aiOut');
-  if(!s.key){$('aiSet').click();return}
+  if(!aiReady()){$('aiSet').click();return}
   if(chars($('body').value)<50){out.textContent='請先填寫初稿內文。';return}
   out.textContent='AI 檢視中…';
   const user=`新聞標題：${val('title')}\n事件亮點：${[val('hl1'),val('hl2'),val('hl3')].filter(Boolean).join('；')}\n出席貴賓：${val('guests3')}\n初稿內文：\n${$('body').value}`;
   try{
-    const r=await fetch(s.base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+s.key},
-      body:JSON.stringify({model:s.model,messages:[{role:'system',content:GUIDE},{role:'user',content:user}],temperature:0.3})});
-    if(!r.ok)throw new Error(`HTTP ${r.status} ${await r.text()}`);
-    const j=await r.json();out.textContent=j.choices?.[0]?.message?.content||JSON.stringify(j);
-  }catch(err){out.textContent=`無法連線至高科iAI：${err.message}\n\n可能原因：(1) API 網址、模型名稱或 key 有誤；(2) 不在校園網路內；(3) iAI 尚未開放從外部網頁直接呼叫（CORS）。`}
+    out.textContent=await aiChat([{role:'system',content:GUIDE},{role:'user',content:user}],0.3)||'AI 沒有回傳內容，請再試一次。';
+  }catch(err){out.textContent=aiErr(err)}
 };
 
 
@@ -794,7 +864,7 @@ function parseDraft(t){
 $('aiSet2').onclick=()=>$('aiSet').click();
 $('aiDraft').onclick=async()=>{
   const s=aiLoad(),out=$('draftOut');
-  if(!s.key){$('aiSet').click();return}
+  if(!aiReady()){$('aiSet').click();return}
   const notes=$('rawNotes').value.trim();
   if(chars(notes)<15){out.textContent='請先輸入一些活動資訊（至少一兩句）。';return}
   const ctx=[`申請單位：${val('unit')||'（未填）'}`,`活動或成果名稱：${val('eventName')||'（未填）'}`,
@@ -802,17 +872,14 @@ $('aiDraft').onclick=async()=>{
     val('guests3')?`出席貴賓：${val('guests3')}`:'',`今天日期：${fmt(today)}`].filter(Boolean).join('\n');
   out.textContent='AI 撰寫中，約需數十秒…';$('aiApply').classList.add('hidden');$('aiDraft').disabled=true;
   try{
-    const r=await fetch(s.base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+s.key},
-      body:JSON.stringify({model:s.model,temperature:0.4,messages:[{role:'system',content:DRAFT_SYS},{role:'user',content:`【基本資料】\n${ctx}\n\n【申請單位提供的零散資訊】\n${notes}`}]})});
-    if(!r.ok)throw new Error(`HTTP ${r.status} ${await r.text()}`);
-    const j=await r.json();const raw=j.choices?.[0]?.message?.content||'';
+    const raw=await aiChat([{role:'system',content:DRAFT_SYS},{role:'user',content:`【基本資料】\n${ctx}\n\n【申請單位提供的零散資訊】\n${notes}`}],0.4)||'';
     let d;try{d=parseDraft(raw)}catch(e){out.textContent=raw||e.message;return}
     lastDraft=d;
     out.textContent=`【新聞標題】${d.title}（${chars(d.title)} 字）\n\n【事件亮點】\n${d.highlights.map((h,i)=>`${i+1}. ${h}`).join('\n')}\n\n【內文】（${chars(d.body)} 字）\n${d.body}`+
       (d.missing.length?`\n\n【待補資訊】\n${d.missing.map(m=>'・'+m).join('\n')}`:'')+
       `\n\n※ 草稿由 AI 產生，請逐一核對姓名、職稱、數據與引言，並補齊「○○」處。`;
     $('aiApply').classList.remove('hidden');
-  }catch(err){out.textContent=`無法連線至高科iAI：${err.message}\n\n可能原因：(1) API key 有誤或額度用完；(2) 不在校園網路內；(3) iAI 尚未開放從外部網頁直接呼叫（CORS）。`}
+  }catch(err){out.textContent=aiErr(err)}
   finally{$('aiDraft').disabled=false}
 };
 $('aiApply').onclick=()=>{
@@ -851,7 +918,7 @@ function newsForSocial(){
 }
 $('aiSocial').onclick=async()=>{
   const s=aiLoad(),out=$('socialOut');
-  if(!s.key){$('aiSet').click();return}
+  if(!aiReady()){$('aiSet').click();return}
   const notes=$('socialNotes').value.trim()||val('postText');
   const news=newsForSocial();
   if(!news&&chars(notes)<10){out.textContent='請先輸入一些活動重點（至少一兩句）。';return}
@@ -861,15 +928,12 @@ $('aiSocial').onclick=async()=>{
     val('postDate')?`預定發文日：${roc(val('postDate'))}`:'',val('postLink')?`相關連結：${val('postLink')}`:'相關連結：（無）',`今天日期：${fmt(today)}`].filter(Boolean).join('\n');
   out.textContent='AI 撰寫中…';$('aiSocialApply').classList.add('hidden');$('aiSocial').disabled=true;
   try{
-    const r=await fetch(s.base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+s.key},
-      body:JSON.stringify({model:s.model,temperature:0.7,messages:[{role:'system',content:SOCIAL_SYS},{role:'user',content:`【基本資料】\n${ctx}`+(news?`\n\n【新聞稿】\n${news}`:'')+(notes?`\n\n【${news?'補充資訊':'申請單位提供的活動重點'}】\n${notes}`:'')}]})});
-    if(!r.ok)throw new Error(`HTTP ${r.status} ${await r.text()}`);
-    const j=await r.json();const raw=(j.choices?.[0]?.message?.content||'').replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'');
+    const raw=(await aiChat([{role:'system',content:SOCIAL_SYS},{role:'user',content:`【基本資料】\n${ctx}`+(news?`\n\n【新聞稿】\n${news}`:'')+(notes?`\n\n【${news?'補充資訊':'申請單位提供的活動重點'}】\n${notes}`:'')}],0.7)||'').replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'');
     let d;try{const a=raw.indexOf('{'),b=raw.lastIndexOf('}');d=JSON.parse(raw.slice(a,b+1));if(!d.fb||!d.ig)throw 0}catch{out.textContent=raw||'AI 回傳格式無法解析，請再試一次。';return}
     d.fb=d.fb.replace(/\\n/g,'\n');d.ig=d.ig.replace(/\\n/g,'\n');d.missing=d.missing||[];lastSocial=d;
     out.textContent=`【Facebook 版】（${chars(d.fb)} 字）\n${d.fb}\n\n【Instagram 版】（${chars(d.ig)} 字）\n${d.ig}`+(d.missing.length?`\n\n【待補資訊】\n${d.missing.map(m=>'・'+m).join('\n')}`:'');
     $('aiSocialApply').classList.remove('hidden');
-  }catch(err){out.textContent=`無法連線至高科iAI：${err.message}\n\n可能原因：(1) API key 有誤或額度用完；(2) 不在校園網路內；(3) iAI 尚未開放從外部網頁直接呼叫（CORS）。`}
+  }catch(err){out.textContent=aiErr(err)}
   finally{$('aiSocial').disabled=false}
 };
 $('aiSocialApply').onclick=()=>{
