@@ -109,6 +109,9 @@ button.small{padding:5px 10px;font-size:14px}
 body.fast .fast-only{display:block}
 body.fast .main-only{display:none!important}
 body.fast #sec6{display:block!important}
+.invalid-f{border-color:var(--err)!important;box-shadow:0 0 0 3px rgba(179,38,30,.15)!important}
+.invalid-b{outline:2px solid var(--err);outline-offset:3px;border-radius:6px}
+.side li.e{cursor:pointer}.side li.e:hover{filter:brightness(.96)}
 .up-ok{background:var(--ok-soft);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:14px}
 .photo-res div{padding:5px 8px;border-radius:6px;margin-bottom:4px}
 .photo-res .pass{background:var(--ok-soft)}.photo-res .fail{background:var(--err-soft)}
@@ -274,6 +277,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
         <button type="button" class="small hidden" id="aiApply" style="background:var(--brand);color:#fff">套用到下方欄位</button>
         <button type="button" class="small" id="aiSet2">AI 設定</button>
       </div>
+      <div class="hint" id="draftApplied" style="margin-top:6px"></div>
       <div class="ai-out" id="draftOut"></div>
       <div class="hint" style="margin-top:6px">※ 套用後，新聞標題、事件亮點和初稿內文都可以在下方欄位直接修改；也可以不套用，只複製需要的段落自行貼上。AI 草稿僅供參考，送出前請逐一核對人名、職稱、數據與引言。</div>
     </div>
@@ -339,6 +343,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
         <button type="button" class="small hidden" id="aiSocialApply" style="background:var(--brand);color:#fff">套用到貼文內容</button>
         <button type="button" class="small" id="aiSet3">AI 設定</button>
       </div>
+      <div class="hint" id="socialApplied" style="margin-top:6px"></div>
       <div class="ai-out" id="socialOut"></div>
       <div class="hint" style="margin-top:6px">※ 套用後可在「貼文內容」欄直接修改，也可以只複製需要的版本。公關中心仍會依各平台調整文案；活動資訊、日期與連結請再次核對。</div>
     </div>
@@ -404,7 +409,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
     <h3>即時檢核</h3>
     <div class="tally"><span style="background:var(--err-soft)" id="tE">0 項必須修正</span><span style="background:var(--warn-soft)" id="tW">0 項提醒</span></div>
     <ul id="checkList"></ul>
-    <button class="primary" id="submitBtn" disabled>送出申請</button>
+    <div id="submitWrap" style="position:relative"><button class="primary" id="submitBtn" disabled>送出申請</button><span id="submitCatch" style="position:absolute;inset:10px 0 0 0;cursor:not-allowed" class="hidden"></span></div>
     <div class="result" id="result"></div>
     <p class="hint" style="margin-top:10px">紅色項目須修正才能繼續；黃色項目不擋送出，但可能被通知補件或改變刊登方式。撰寫問題請洽楊豐榮資深經理（分機 31021）。</p>
   </div>
@@ -561,7 +566,7 @@ const ftKinds=()=>[...document.querySelectorAll('[name=ftKind]:checked')].map(x=
 function setMode(){
   const f=isFast();document.body.classList.toggle('fast',f);
   $('submitBtn').textContent=f?'上傳照片至公關中心':(CONFIG.SUBMIT_URL?'送出申請':'產生申請表（Word）');
-  $('result').innerHTML='';
+  $('result').innerHTML='';showAll=false;
   try{history.replaceState(null,'',f?'#photos':location.pathname+location.search)}catch{}
   check();
 }
@@ -584,7 +589,8 @@ function checkFast(){
   if(ftKinds().includes('news')&&withPhoto.length>CONFIG.NEWS_PHOTO_MAX)W.push(`新聞稿照片以 ${CONFIG.NEWS_PHOTO_MAX} 張為限，目前 ${withPhoto.length} 張`);
   $('tE').textContent=`${E.length} 項必須修正`;$('tW').textContent=`${W.length} 項提醒`;
   $('checkList').innerHTML=[...E.map(t=>`<li class="e">✗ ${t}</li>`),...W.map(t=>`<li class="w">！${t}</li>`),...I.map(t=>`<li class="i">${t}</li>`),...(!E.length&&!W.length?['<li class="k">✓ 可以上傳</li>']:[])].join('');
-  $('submitBtn').disabled=!!E.length;
+  $('submitBtn').disabled=!!E.length;$('submitCatch').classList.toggle('hidden',!E.length);
+  if(typeof markErrors==='function')markErrors(E);
   return {E,W};
 }
 function check(){
@@ -719,7 +725,8 @@ function render(E,W,I){
   $('tE').textContent=`${E.length} 項必須修正`;$('tW').textContent=`${W.length} 項提醒`;
   const ok=cats().length&&!E.length;
   $('checkList').innerHTML=[...E.map(t=>`<li class="e">✗ ${t}</li>`),...W.map(t=>`<li class="w">！${t}</li>`),...I.map(t=>`<li class="i">${t}</li>`),...(ok&&!W.length?['<li class="k">✓ 檢核通過</li>']:[])].join('');
-  $('submitBtn').disabled=!ok;
+  $('submitBtn').disabled=!ok;$('submitCatch').classList.toggle('hidden',!!ok);
+  if(typeof markErrors==='function')markErrors(E);
 }
 
 document.getElementById('form').addEventListener('input',check);
@@ -1057,10 +1064,24 @@ ${EXAMPLE}
 只輸出一個 JSON 物件，不要有其他文字或 Markdown，格式：
 {"title":"新聞標題","highlights":["亮點1","亮點2","亮點3"],"body":"內文，段落之間用\\n\\n分隔","missing":["待補資訊1","待補資訊2"]}`;
 let lastDraft=null;
-function parseDraft(t){
-  t=t.replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'');
+/* 寬鬆解析 AI 回傳的 JSON（容許字串內直接換行、前後有說明文字或 ``` 標記） */
+function looseJSON(t){
+  t=String(t||'').replace(/^[\s\S]*?```(?:json)?\s*/i,m=>m.includes('{')?m:'').replace(/```[\s\S]*$/,'');
   const a=t.indexOf('{'),b=t.lastIndexOf('}');if(a<0||b<a)throw new Error('AI 回傳格式無法解析');
-  const j=JSON.parse(t.slice(a,b+1));if(!j.title||!j.body)throw new Error('AI 回傳內容缺少標題或內文');
+  t=t.slice(a,b+1);
+  try{return JSON.parse(t)}catch{}
+  let out='',inStr=false,esc=false;
+  for(const ch of t){
+    if(inStr){if(esc){out+=ch;esc=false;continue}
+      if(ch==='\\'){out+=ch;esc=true;continue}
+      if(ch==='"'){inStr=false;out+=ch;continue}
+      if(ch==='\n'){out+='\\n';continue}if(ch==='\r')continue;if(ch==='\t'){out+='\\t';continue}
+      out+=ch}
+    else{if(ch==='"')inStr=true;out+=ch}}
+  return JSON.parse(out.replace(/,\s*([}\]])/g,'$1'));
+}
+function parseDraft(t){
+  const j=looseJSON(t);if(!j.title||!j.body)throw new Error('AI 回傳內容缺少標題或內文');
   j.highlights=(j.highlights||[]).slice(0,3);j.missing=j.missing||[];return j;
 }
 $('aiSet2').onclick=()=>$('aiSet').click();
@@ -1068,14 +1089,17 @@ $('aiDraft').onclick=async()=>{
   const s=aiLoad(),out=$('draftOut');
   if(!aiReady()){$('aiSet').click();return}
   const notes=$('rawNotes').value.trim();
-  if(chars(notes)<15){out.textContent='請先輸入一些活動資訊（至少一兩句）。';return}
+  $('aiApply').classList.add('hidden');$('draftApplied').textContent='';lastDraft=null;
+  if(chars(notes)<8){out.textContent='請先輸入一些活動資訊（至少一兩句）。';return}
   const ctx=[`申請單位：${val('unit')||'（未填）'}`,`活動或成果名稱：${val('eventName')||'（未填）'}`,
     `事件日期：${val('eventDate')?roc(val('eventDate')):'（未填）'}`,`事件地點：${val('eventPlace')||'（未填）'}`,
     val('guests3')?`出席貴賓：${val('guests3')}`:'',`今天日期：${fmt(today)}`].filter(Boolean).join('\n');
-  out.textContent='AI 撰寫中，約需數十秒…';$('aiApply').classList.add('hidden');$('aiDraft').disabled=true;
+  out.textContent='AI 撰寫中，約需數十秒…';$('draftApplied').textContent='';$('aiApply').classList.add('hidden');$('aiDraft').disabled=true;
   try{
     const raw=await aiChat([{role:'system',content:DRAFT_SYS},{role:'user',content:`【基本資料】\n${ctx}\n\n【申請單位提供的零散資訊】\n${notes}`}],0.4)||'';
-    let d;try{d=parseDraft(raw)}catch(e){out.textContent=raw||e.message;return}
+    let d;try{d=parseDraft(raw)}catch(e){
+      if(chars(raw)>=50){lastDraft={title:'',highlights:[],body:raw.trim(),missing:[],rawOnly:true};out.textContent=`（AI 未依格式回覆，以下為原始內容，可套用到內文後自行調整）\n\n${raw}`;$('aiApply').classList.remove('hidden')}
+      else out.textContent=raw||e.message;return}
     lastDraft=d;
     out.textContent=`【新聞標題】${d.title}（${chars(d.title)} 字）\n\n【事件亮點】\n${d.highlights.map((h,i)=>`${i+1}. ${h}`).join('\n')}\n\n【內文】（${chars(d.body)} 字）\n${d.body}`+
       (d.missing.length?`\n\n【待補資訊】\n${d.missing.map(m=>'・'+m).join('\n')}`:'')+
@@ -1084,13 +1108,21 @@ $('aiDraft').onclick=async()=>{
   }catch(err){out.textContent=aiErr(err)}
   finally{$('aiDraft').disabled=false}
 };
+/* 套用 AI 草稿：直接覆蓋，並保留上一版可復原 */
+function applyWithUndo(ids,values,noteEl,focusId){
+  const prev=ids.map(id=>$(id).value);
+  ids.forEach((id,i)=>{if(values[i]!==undefined&&values[i]!==null)$(id).value=values[i]});
+  check();
+  noteEl.innerHTML='✓ 已套用到下方欄位，可直接修改　<button type="button" class="linkbtn">復原套用前的內容</button>';
+  noteEl.querySelector('button').onclick=()=>{ids.forEach((id,i)=>$(id).value=prev[i]);noteEl.textContent='已復原。';check()};
+  $(focusId).scrollIntoView({behavior:'smooth',block:'center'});
+}
 $('aiApply').onclick=()=>{
   if(!lastDraft)return;
-  const filled=val('title')||val('hl1')||chars($('body').value);
-  if(filled&&!confirm('新聞標題、事件亮點或內文已有內容，要用 AI 草稿覆蓋嗎？'))return;
-  $('title').value=lastDraft.title;['hl1','hl2','hl3'].forEach((id,i)=>$(id).value=lastDraft.highlights[i]||'');
-  $('body').value=lastDraft.body.replace(/\\n/g,'\n');check();
-  $('title').scrollIntoView({behavior:'smooth',block:'center'});
+  const d=lastDraft;
+  applyWithUndo(['title','hl1','hl2','hl3','body'],
+    d.rawOnly?[null,null,null,null,d.body]:[d.title,d.highlights[0]||'',d.highlights[1]||'',d.highlights[2]||'',d.body.replace(/\\n/g,'\n')],
+    $('draftApplied'),d.rawOnly?'body':'title');
 };
 
 /* ===== AI 協助撰寫社群貼文 ===== */
@@ -1123,6 +1155,7 @@ $('aiSocial').onclick=async()=>{
   const s=aiLoad(),out=$('socialOut');
   if(!aiReady()){$('aiSet').click();return}
   const plats=platforms();
+  $('aiSocialApply').classList.add('hidden');$('socialApplied').textContent='';lastSocial=null;
   if(!plats.length){out.textContent='請先勾選發佈平台（Facebook／Instagram）。';return}
   const wantFb=plats.includes('Facebook'),wantIg=plats.includes('Instagram');
   const notes=$('socialNotes').value.trim()||val('postText');
@@ -1132,10 +1165,10 @@ $('aiSocial').onclick=async()=>{
   const ctx=[`發佈平台：${plats.join('、')}`,`貼文類型：${types}`,`申請單位：${val('unit')||'（未填）'}`,`活動或成果名稱：${val('eventName')||'（未填）'}`,
     `事件日期：${val('eventDate')?roc(val('eventDate')):'（未填）'}`,`事件地點：${val('eventPlace')||'（未填）'}`,
     val('postDate')?`預定發文日：${roc(val('postDate'))}`:'',val('postLink')?`相關連結：${val('postLink')}`:'相關連結：（無）',`今天日期：${fmt(today)}`].filter(Boolean).join('\n');
-  out.textContent='AI 撰寫中…';$('aiSocialApply').classList.add('hidden');$('aiSocial').disabled=true;
+  out.textContent='AI 撰寫中…';$('socialApplied').textContent='';$('aiSocialApply').classList.add('hidden');$('aiSocial').disabled=true;
   try{
     const raw=(await aiChat([{role:'system',content:SOCIAL_SYS},{role:'user',content:`【基本資料】\n${ctx}`+(news?`\n\n【新聞稿】\n${news}`:'')+(notes?`\n\n【${news?'補充資訊':'申請單位提供的活動重點'}】\n${notes}`:'')}],0.7)||'').replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'');
-    let d;try{const a=raw.indexOf('{'),b=raw.lastIndexOf('}');d=JSON.parse(raw.slice(a,b+1));if((wantFb&&!d.fb)||(wantIg&&!d.ig))throw 0}catch{out.textContent=raw||'AI 回傳格式無法解析，請再試一次。';return}
+    let d;try{d=looseJSON(raw);if((wantFb&&!d.fb)||(wantIg&&!d.ig))throw 0}catch{out.textContent=raw||'AI 回傳格式無法解析，請再試一次。';return}
     d.fb=wantFb?String(d.fb).replace(/\\n/g,'\n'):'';d.ig=wantIg?String(d.ig).replace(/\\n/g,'\n'):'';d.missing=d.missing||[];lastSocial=d;
     out.textContent=[d.fb?`【Facebook 版】（${chars(d.fb)} 字）\n${d.fb}`:'',d.ig?`【Instagram 版】（${chars(d.ig)} 字）\n${d.ig}`:''].filter(Boolean).join('\n\n')+(d.missing.length?`\n\n【待補資訊】\n${d.missing.map(m=>'・'+m).join('\n')}`:'');
     $('aiSocialApply').classList.remove('hidden');
@@ -1144,9 +1177,7 @@ $('aiSocial').onclick=async()=>{
 };
 $('aiSocialApply').onclick=()=>{
   if(!lastSocial)return;
-  if(val('postText')&&!confirm('貼文內容已有文字，要用 AI 草稿覆蓋嗎？'))return;
-  $('postText').value=[lastSocial.fb?`【Facebook】\n${lastSocial.fb}`:'',lastSocial.ig?`【Instagram】\n${lastSocial.ig}`:''].filter(Boolean).join('\n\n');check();
-  $('postText').scrollIntoView({behavior:'smooth',block:'center'});
+  applyWithUndo(['postText'],[[lastSocial.fb?`【Facebook】\n${lastSocial.fb}`:'',lastSocial.ig?`【Instagram】\n${lastSocial.ig}`:''].filter(Boolean).join('\n\n')],$('socialApplied'),'postText');
 };
 
 /* ===== 記住申請人資訊（瀏覽器 localStorage） ===== */
@@ -1160,6 +1191,62 @@ function meForget(){try{localStorage.removeItem(ME_KEY)}catch{}$('forgetMe').cla
 ME_FIELDS.forEach(k=>$(k).addEventListener('change',meSave));
 $('rememberMe').addEventListener('change',()=>{if($('rememberMe').checked){meSave();$('rememberMsg').textContent='已儲存。'}else{meForget();$('rememberMsg').textContent='已清除，下次不會自動帶入。'}});
 $('forgetMe').onclick=()=>{meForget();$('rememberMe').checked=false;ME_FIELDS.forEach(k=>$(k).value='');$('rememberMsg').textContent='已清除。';check()};
+
+/* ===== 紅框標示需修正的欄位 ===== */
+var touched=new Set(),showAll=false;
+const box=el=>el?.closest('td')||el;
+const MARKS=[
+  [/原申請項目/,()=>[box(document.querySelector('[name=ftKind]'))]],
+  [/^請填申請單位/,()=>[isFast()?$('ftUnit'):$('unit')]],
+  [/聯絡窗口姓名/,()=>[isFast()?$('ftName'):$('cName')]],
+  [/聯絡窗口分機/,()=>[$('cPhone')]],
+  [/聯絡窗口 Email|Email 格式/,()=>[isFast()?$('ftEmail'):$('cEmail')]],
+  [/原申請活動名稱/,()=>[$('ftEvent')]],
+  [/選擇要上傳的照片|張超過|照片超過/,()=>[$('capList')]],
+  [/素材超過/,()=>[$('assetList')]],
+  [/事件日期/,()=>[$('eventDate')]],
+  [/預定發文日/,()=>[$('postDate')]],
+  [/我了解，仍要提出申請/,()=>[$('overdueBox')]],
+  [/校外稿請填寫理由/,()=>[$('externalReason')]],
+  [/協助項目/,()=>[$('staffNeeds')]],
+  [/成果報導請勾選類型/,()=>[$('resultTypes')]],
+  [/「其他」請填寫類型/,()=>[$('resultOther')]],
+  [/已公開或經合作單位同意/,()=>[$('resultPublic').closest('label')]],
+  [/活動或成果名稱/,()=>[$('eventName')]],
+  [/新聞標題/,()=>[$('title')]],
+  [/事件亮點/,()=>[$('hl1')]],
+  [/初稿內文/,()=>[$('body')]],
+  [/請勾選修改授權/,()=>[box(document.querySelector('[name=auth]'))]],
+  [/依原文照刊/,()=>[$('authNote')]],
+  [/活動流程/,()=>[$('flow')]],
+  [/採訪重點/,()=>[$('fc1')]],
+  [/現場聯絡人/,()=>[val('siteName')?null:$('siteName'),val('sitePhone')?null:$('sitePhone')].filter(Boolean)],
+  [/發佈平台/,()=>[box(document.querySelector('[name=platform]'))]],
+  [/貼文內容或重點/,()=>[$('postText')]],
+  [/核實新聞稿/,()=>[$('cf-check-w')]],
+  [/肖像授權/,()=>[$('cfPortrait').closest('label')]],
+];
+const targetsFor=msg=>{const m=MARKS.find(([re])=>re.test(msg));return m?m[1]().filter(Boolean):[]};
+const isField=el=>/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName);
+const wasTouched=el=>showAll||touched.has(el)||[...el.querySelectorAll?.('input,textarea,select')||[]].some(x=>touched.has(x));
+function markErrors(E){
+  document.querySelectorAll('.invalid-f,.invalid-b').forEach(el=>el.classList.remove('invalid-f','invalid-b'));
+  E.forEach(msg=>targetsFor(msg).forEach(el=>{if(el.offsetParent===null&&el.id!=='overdueBox')return;
+    if(wasTouched(el))el.classList.add(isField(el)?'invalid-f':'invalid-b')}));
+}
+function gotoError(msg){
+  const el=targetsFor(msg).find(x=>x.offsetParent!==null);if(!el)return;
+  showAll=true;check();
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  const f=isField(el)?el:el.querySelector('input,textarea,select');if(f)setTimeout(()=>f.focus({preventScroll:true}),350);
+}
+$('form').addEventListener('focusout',e=>{if(e.target.matches('input,textarea,select')){touched.add(e.target);check()}});
+$('form').addEventListener('change',e=>{if(e.target.matches('input[type=checkbox],input[type=radio],input[type=date],input[type=file]'))touched.add(e.target)});
+$('checkList').addEventListener('click',e=>{const li=e.target.closest('li.e');if(li)gotoError(li.textContent.replace(/^✗\s*/,''))});
+/* 按鈕停用時點一下：標出所有需修正處並跳到第一個 */
+$('submitBtn').parentElement.addEventListener('click',e=>{
+  if(!$('submitBtn').disabled||!(e.target===$('submitBtn')||e.target.closest('#submitWrap')))return;
+  const first=$('checkList').querySelector('li.e');if(first)gotoError(first.textContent.replace(/^✗\s*/,''))},true);
 
 (function initFast(){
   let m=null;try{m=JSON.parse(localStorage.getItem('nkust-pr-applicant'))}catch{}
