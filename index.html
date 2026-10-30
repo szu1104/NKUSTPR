@@ -92,6 +92,15 @@ button.small{padding:5px 10px;font-size:14px}
 @media (max-width:640px){.cap-row{grid-template-columns:1fr 32px}.cap-row .no{grid-column:1;grid-row:1;text-align:left;padding-top:2px}.cap-row .x-btn{grid-column:2;grid-row:1}.cap-row .pic,.cap-row .txt{grid-column:1/3}}
 .remember{margin-top:8px;font-size:14px}
 .linkbtn{border:0;background:none;color:var(--brand);text-decoration:underline;padding:0 4px;font-size:13.5px}
+.mode-pick{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:640px){.mode-pick{grid-template-columns:1fr}}
+.mode-opt{display:flex;gap:10px;align-items:flex-start;border:2px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;background:#fff}
+.mode-opt input{margin-top:6px}
+.mode-opt:has(input:checked){border-color:var(--brand);background:var(--brand-soft)}
+.fast-only{display:none}
+body.fast .fast-only{display:block}
+body.fast .main-only{display:none!important}
+body.fast #sec6{display:block!important}
 .up-ok{background:var(--ok-soft);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:14px}
 .photo-res div{padding:5px 8px;border-radius:6px;margin-bottom:4px}
 .photo-res .pass{background:var(--ok-soft)}.photo-res .fail{background:var(--err-soft)}
@@ -120,8 +129,34 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
 <div class="layout">
 <main id="form">
 
+<!-- 申請類型 -->
+<section class="card mode-card">
+  <div class="body mode-pick">
+    <label class="mode-opt"><input type="radio" name="mode" value="new" checked><span><b>新申請</b><br><span class="hint">新聞稿、邀請媒體、社群貼文等上架申請</span></span></label>
+    <label class="mode-opt"><input type="radio" name="mode" value="fast"><span><b>已提送申請，補照片或圖片</b><br><span class="hint">稿件已送出，活動結束後補傳照片（直接上傳，免填其他欄位）</span></span></label>
+  </div>
+</section>
+
+<!-- 補件 -->
+<section class="card fast-only">
+  <h2>補傳照片或圖片</h2>
+  <div class="body">
+    <p class="hint" style="margin-top:0">請填寫原申請的基本資料，以便公關中心對應。照片上傳至公關中心雲端後，請按「通知公關中心」寄信告知。</p>
+    <table class="form">
+      <tr><th>* 原申請項目</th><td>
+        <label class="chk"><input type="checkbox" name="ftKind" value="news">新聞（校內稿、校外稿、到校採訪、成果報導）</label><br>
+        <label class="chk"><input type="checkbox" name="ftKind" value="social">官方 Facebook／Instagram</label></td></tr>
+      <tr><th>* 申請單位</th><td><input type="text" id="ftUnit"></td></tr>
+      <tr><th>* 聯絡窗口</th><td><div class="row3"><input type="text" id="ftName" placeholder="姓名"><input type="tel" id="ftPhone" placeholder="分機／手機"><input type="email" id="ftEmail" placeholder="Email"></div></td></tr>
+      <tr><th>* 原申請活動名稱<span class="hint">與原申請表相同</span></th><td><input type="text" id="ftEvent"></td></tr>
+      <tr><th>事件日期</th><td><input type="date" id="ftDate"></td></tr>
+      <tr><th>補充說明</th><td><textarea id="ftNote" style="min-height:60px" placeholder="例如：原申請於 11/10 寄出，新聞稿已確認；本次補 5 張活動照片"></textarea></td></tr>
+    </table>
+  </div>
+</section>
+
 <!-- 寄送方式 -->
-<section class="card">
+<section class="card main-only">
   <h2>寄送方式</h2>
   <div class="body">
     <p class="hint">依勾選的申請項目自動分流，以下亮起的列即本次申請的收件人。</p>
@@ -134,7 +169,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
 </section>
 
 <!-- 一、申請項目 -->
-<section class="card">
+<section class="card main-only">
   <h2>一、申請項目（可複選）</h2>
   <div class="body">
     <p class="hint">期限以日曆天計，自收件日（今天：<b id="today-label"></b>）起算；事件日指活動舉行日或成果擬公布日。</p>
@@ -179,15 +214,12 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
           <a href="https://ws1.nkust.edu.tw/CCElecForm/" target="_blank" rel="noopener">電算中心電子表單申請系統</a>
           <span class="hint">登入後，選擇「校園網頁建置修改申請」提出。</span></td></tr>
     </table>
-    <div class="notice warn hidden" id="overdueBox">
-      <b>部分項目已逾申請期限。</b>依 BC03，逾申請期限或已逾新聞時效者，公關中心得退回或改以其他管道刊登。<br>
-      <label class="chk"><input type="checkbox" id="overdueAck">我了解，仍要提出申請</label>
-    </div>
+
   </div>
 </section>
 
 <!-- 二、基本資料 -->
-<section class="card">
+<section class="card main-only">
   <h2>二、基本資料（* 為必填）</h2>
   <div class="body">
     <table class="form">
@@ -207,11 +239,15 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
         <td><input type="date" id="eventDate"></td></tr>
       <tr><th>事件地點<span class="hint">有活動者填寫</span></th><td><input type="text" id="eventPlace"></td></tr>
     </table>
+    <div class="notice warn hidden" id="overdueBox">
+      <b>部分項目已逾申請期限</b>（<span id="overdueList"></span>）。依 BC03，逾申請期限或已逾新聞時效者，公關中心得退回或改以其他管道刊登。<br>
+      <label class="chk"><input type="checkbox" id="overdueAck">我了解，仍要提出申請</label>
+    </div>
   </div>
 </section>
 
 <!-- 三、新聞稿 -->
-<section class="card hidden" id="sec3">
+<section class="card main-only hidden" id="sec3">
   <h2>三、新聞稿（校內稿、校外稿、到校採訪、成果報導填寫）</h2>
   <div class="body">
     <div class="ai-box" style="margin:0 0 14px">
@@ -252,7 +288,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
 </section>
 
 <!-- 四、邀請媒體 -->
-<section class="card hidden" id="sec4">
+<section class="card main-only hidden" id="sec4">
   <h2>四、邀請媒體到校採訪（申請採訪通知、辦理記者會或請公關中心協助者填寫）</h2>
   <div class="body">
     <table class="form">
@@ -269,7 +305,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
 </section>
 
 <!-- 五、社群素材 -->
-<section class="card hidden" id="sec5">
+<section class="card main-only hidden" id="sec5">
   <h2>五、社群素材（申請 Facebook／Instagram 者填寫）</h2>
   <div class="body">
     <table class="form" style="margin-bottom:14px">
@@ -312,17 +348,17 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
       <button type="button" class="small" id="addCap">＋ 增列一則（不附照片）</button>
       <span class="hint" id="photoCount"></span>
     </div>
-    <div class="hint" style="margin-top:6px">每張照片右側填寫對應的圖說（建議 10–40 字；有人物時標註單位、職稱、姓名及位置，如左一、右二；社群照片可免填）。照片會先檢查規格，產生申請表時一併上傳。</div>
+    <div class="hint" style="margin-top:6px">每張照片右側填寫對應的圖說（建議 10–40 字；有人物時標註單位、職稱、姓名及位置，如左一、右二；社群照片可免填）。照片會先檢查規格，送出時一併上傳。</div>
     <div class="hint hidden" id="uploadOff" style="margin-top:4px">※ 照片上傳功能尚未啟用：照片縮圖會放進申請表供對照，原檔請另提供雲端連結。</div>
     <div class="cap-list" id="capList"></div>
-    <table class="form" style="margin-top:10px">
+    <table class="form main-only" style="margin-top:10px">
       <tr><th>照片下載連結<span class="hint">選填：雲端資料夾連結，或註明另檔寄送</span></th><td><input type="text" id="photoLink"></td></tr>
     </table>
   </div>
 </section>
 
 <!-- 確認事項 -->
-<section class="card hidden" id="secConfirm">
+<section class="card main-only hidden" id="secConfirm">
   <h2>確認事項</h2>
   <div class="body">
     <label class="chk" id="cf-check-w"><input type="checkbox" id="cfCheck">已核實新聞稿內容，尤以姓名、單位、職稱、專有名詞及數據；引述受訪者發言已經本人確認。</label><br>
@@ -333,7 +369,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
 </section>
 
 <!-- 七、公關中心評估意見 -->
-<section class="card">
+<section class="card main-only">
   <h2>七、公關中心評估意見（公關中心填寫）</h2>
   <div class="body">
     <table class="form grey">
@@ -354,7 +390,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
     <ul id="checkList"></ul>
     <button class="primary" id="submitBtn" disabled>送出申請</button>
     <div class="result" id="result"></div>
-    <p class="hint" style="margin-top:10px">紅色項目須修正才能產生申請表；黃色項目不擋送出，但可能被通知補件或改變刊登方式。撰寫問題請洽楊豐榮資深經理（分機 31021）。</p>
+    <p class="hint" style="margin-top:10px">紅色項目須修正才能繼續；黃色項目不擋送出，但可能被通知補件或改變刊登方式。撰寫問題請洽楊豐榮資深經理（分機 31021）。</p>
   </div>
 </aside>
 </div>
@@ -446,7 +482,7 @@ function renderItems(){
     box.appendChild(row)});
   const n=items.filter(x=>x.photo).length;
   $('photoCount').textContent=n?`已選 ${n} 張照片`:'';
-  if(uploaded&&uploaded.sig!==fileSig())uploaded=null;
+  if(uploaded&&!uploaded.sig.startsWith(fileSig()))uploaded=null;
 }
 $('photoFiles').addEventListener('change',async e=>{
   const fs=[...e.target.files];e.target.value='';
@@ -465,7 +501,7 @@ function renderAssets(){
     d.querySelector('.x-btn').onclick=()=>{URL.revokeObjectURL(p.url);assets.splice(i,1);renderAssets();check()};
     box.appendChild(d)});
   $('assetCount').textContent=assets.length?`已選 ${assets.length} 個檔案`:'';
-  if(uploaded&&uploaded.sig!==fileSig())uploaded=null;
+  if(uploaded&&!uploaded.sig.startsWith(fileSig()))uploaded=null;
 }
 $('assetFiles').addEventListener('change',async e=>{for(const f of [...e.target.files])assets.push(await inspect(f,false));e.target.value='';renderAssets();check()});
 
@@ -481,16 +517,16 @@ async function gas(body){
   if(!j.ok)throw new Error(j.error||'上傳失敗');return j}
 function filesToUpload(){
   const out=[];
-  if(!$('sec5').classList.contains('hidden'))assets.forEach((p,i)=>out.push({p,prefix:`素材${i+1}_`}));
-  if(!$('sec6').classList.contains('hidden'))items.forEach((it,i)=>{if(it.photo)out.push({p:it.photo,prefix:`圖${i+1}_`})});
+  if(!isFast()&&!$('sec5').classList.contains('hidden'))assets.forEach((p,i)=>out.push({p,prefix:`素材${i+1}_`}));
+  if(isFast()||!$('sec6').classList.contains('hidden'))items.forEach((it,i)=>{if(it.photo)out.push({p:it.photo,prefix:`圖${i+1}_`})});
   return out}
-async function uploadAll(progress){
-  if(uploaded&&uploaded.sig===fileSig())return uploaded;
+async function uploadAll(progress,meta){
+  if(uploaded&&uploaded.sig===fileSig()+(meta?'F':''))return uploaded;
   const list=filesToUpload();
-  const f=await gas({action:'folder',unit:val('unit'),eventName:val('eventName'),eventDate:val('eventDate'),contact:val('cName'),email:val('cEmail')});
+  const f=await gas(meta||{action:'folder',unit:val('unit'),eventName:val('eventName'),eventDate:val('eventDate'),contact:val('cName'),email:val('cEmail')});
   for(let i=0;i<list.length;i++){const {p,prefix}=list[i];progress(`上傳檔案 ${i+1}／${list.length}：${p.name}`);
     await gas({action:'file',folderId:f.folderId,token:f.token,name:prefix+p.name,mimeType:p.file.type||'image/jpeg',data:await toB64(p.file)})}
-  uploaded={sig:fileSig(),url:f.url,photoCount:list.filter(x=>x.prefix.startsWith('圖')).length,assetCount:list.filter(x=>x.prefix.startsWith('素材')).length};
+  uploaded={sig:fileSig()+(meta?'F':''),url:f.url,photoCount:list.filter(x=>x.prefix.startsWith('圖')).length,assetCount:list.filter(x=>x.prefix.startsWith('素材')).length};
   return uploaded}
 
 /* Word 用縮圖 */
@@ -504,7 +540,39 @@ async function thumb(info,maxW=900){
   return {buf:await blob.arrayBuffer(),w:c.width,h:c.height}}
 
 /* 主檢核 */
+const isFast=()=>document.querySelector('[name=mode]:checked')?.value==='fast';
+const ftKinds=()=>[...document.querySelectorAll('[name=ftKind]:checked')].map(x=>x.value);
+function setMode(){
+  const f=isFast();document.body.classList.toggle('fast',f);
+  $('submitBtn').textContent=f?'上傳照片至公關中心':(CONFIG.SUBMIT_URL?'送出申請':'產生申請表（Word）');
+  $('result').innerHTML='';
+  try{history.replaceState(null,'',f?'#photos':location.pathname+location.search)}catch{}
+  check();
+}
+document.querySelectorAll('[name=mode]').forEach(r=>r.addEventListener('change',setMode));
+function checkFast(){
+  const E=[],W=[],I=[];
+  if(!CONFIG.BACKEND_URL)E.push('照片上傳功能尚未啟用，請改以 Email 寄送照片');
+  if(!ftKinds().length)E.push('請勾選原申請項目');
+  [['ftUnit','申請單位'],['ftName','聯絡窗口姓名'],['ftEmail','聯絡窗口 Email'],['ftEvent','原申請活動名稱']].forEach(([id,n])=>{if(!val(id))E.push(`請填${n}`)});
+  if(val('ftEmail')&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(val('ftEmail')))E.push('Email 格式不正確');
+  const withPhoto=items.filter(x=>x.photo);
+  if(!withPhoto.length)E.push('請選擇要上傳的照片或圖片');
+  document.querySelectorAll('.cap').forEach((inp,i)=>{const s=inp.value.trim(),l=chars(s),ct=inp.nextElementSibling;
+    if(!s){ct.textContent='';return}ct.textContent=`${l} 字`;ct.className='counter '+(l>CONFIG.CAPTION_MAX?'bad':'ok');
+    if(l>CONFIG.CAPTION_MAX)W.push(`圖${i+1} 圖說 ${l} 字，建議 ${CONFIG.CAPTION_MAX} 字內`)});
+  const big=withPhoto.filter(x=>x.photo.size>CONFIG.PHOTO_MAX_MB*1048576);if(big.length)E.push(`${big.length} 張超過 ${CONFIG.PHOTO_MAX_MB}MB，請移除或壓縮`);
+  const bad=withPhoto.map((x,i)=>x.photo.problems.length?`圖${items.indexOf(x)+1}`:'').filter(Boolean);
+  if(bad.length)W.push(`${bad.join('、')} 規格不符（建議：JPG、2MB 以上、長邊 3000px、橫式 3:2）`);
+  else if(withPhoto.length)I.push(`${withPhoto.length} 張照片皆符合規格`);
+  if(ftKinds().includes('news')&&withPhoto.length>CONFIG.NEWS_PHOTO_MAX)W.push(`新聞稿照片以 ${CONFIG.NEWS_PHOTO_MAX} 張為限，目前 ${withPhoto.length} 張`);
+  $('tE').textContent=`${E.length} 項必須修正`;$('tW').textContent=`${W.length} 項提醒`;
+  $('checkList').innerHTML=[...E.map(t=>`<li class="e">✗ ${t}</li>`),...W.map(t=>`<li class="w">！${t}</li>`),...I.map(t=>`<li class="i">${t}</li>`),...(!E.length&&!W.length?['<li class="k">✓ 可以上傳</li>']:[])].join('');
+  $('submitBtn').disabled=!!E.length;
+  return {E,W};
+}
 function check(){
+  if(isFast())return checkFast();
   const E=[],W=[],I=[];const c=cats();
   const isNews=c.some(x=>NEWS_CATS.includes(x)), isSocial=c.some(x=>SOCIAL_CATS.includes(x));
   const needS3=c.some(x=>['internal','external','notice','staff','result'].includes(x));
@@ -543,6 +611,7 @@ function check(){
     if(d<0){st.textContent='活動尚未舉行';st.className='status wait';W.push('花絮、成果請於活動後 1 日內提供，目前事件日尚未到')}
     else if(d<=1){st.textContent='✓ 於事件日後 1 日內';st.className='status ok'}
     else{st.textContent=`✗ 事件日後已 ${d} 日`;st.className='status bad';overdue=true;W.push('花絮、成果已逾時效（事件日後 1 日內）')}}
+  $('overdueList').textContent=W.filter(w=>/逾申請期限|已逾時效/.test(w)).map(w=>w.replace(/已逾.*$/,'')).join('、');
   $('overdueBox').classList.toggle('hidden',!overdue);
   if(overdue&&!$('overdueAck').checked)E.push('部分項目逾期，請勾選「我了解，仍要提出申請」');
 
@@ -681,6 +750,7 @@ ${row('系統檢核提醒',d.warnings.join('\n'))}
 
 $('submitBtn').onclick=async()=>{
   const res=$('result');
+  if(isFast())return runFast(res);
   if(CONFIG.BACKEND_URL&&filesToUpload().length){
     $('submitBtn').disabled=true;
     try{await uploadAll(m=>res.innerHTML=`<div class="notice info">${esc(m)}…請勿關閉頁面</div>`);
@@ -701,6 +771,21 @@ $('submitBtn').onclick=async()=>{
     $('submitBtn').disabled=false;
   }else fallback(d,res,!!uploaded);
 };
+async function runFast(res){
+  const caps=items.map((x,i)=>x.photo?`圖${i+1}：${x.caption.trim()||'（未填圖說）'}`:'').filter(Boolean);
+  const meta={action:'folder',unit:val('ftUnit'),eventName:'補件_'+val('ftEvent'),eventDate:val('ftDate'),contact:`${val('ftName')}（${val('ftPhone')}）`,email:val('ftEmail'),
+    note:['【補傳照片】',`原申請項目：${ftKinds().map(k=>k==='news'?'新聞':'官方 FB／IG').join('、')}`,val('ftNote')?`補充說明：${val('ftNote')}`:'','',...caps].filter(x=>x!=='').join('\n')};
+  $('submitBtn').disabled=true;
+  try{await uploadAll(m=>res.innerHTML=`<div class="notice info">${esc(m)}…請勿關閉頁面</div>`,meta)}
+  catch(err){res.innerHTML=`<div class="notice err">上傳失敗：${esc(err.message)}。請稍後再試，或改以 Email 寄送照片。</div>`;$('submitBtn').disabled=false;return}
+  $('submitBtn').disabled=false;
+  const subj=`【補傳照片】${val('ftUnit')}－${val('ftEvent')}`;
+  const body=[`公關中心您好：`,``,`「${val('ftEvent')}」已透過線上申請系統補傳照片 ${uploaded.photoCount} 張至公關中心雲端：`,uploaded.url,``,...caps,``,val('ftNote')?`補充說明：${val('ftNote')}`:'',`聯絡人：${val('ftName')}　${val('ftPhone')}　${val('ftEmail')}`].join('\n');
+  let h=`<div class="up-ok">✓ 已上傳 ${uploaded.photoCount} 張至公關中心雲端</div><div class="notice info">最後一步：請寄信通知承辦人，信件內容已自動填好。`;
+  for(const k of ftKinds()){const R=CONFIG.ROUTES[k];
+    h+=`<a href="mailto:${R.to.join(',')}?${R.cc.length?'cc='+R.cc.join(',')+'&':''}subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}">✉ 通知公關中心：${R.label}</a>`}
+  res.innerHTML=h+'</div>';
+}
 async function fallback(d,res,append){
   const name=`新聞資訊上架申請表_${d.unit}_${d.eventName}`.replace(/[\\/:*?"<>|]/g,'');
   let h='';
@@ -1060,8 +1145,14 @@ ME_FIELDS.forEach(k=>$(k).addEventListener('change',meSave));
 $('rememberMe').addEventListener('change',()=>{if($('rememberMe').checked){meSave();$('rememberMsg').textContent='已儲存。'}else{meForget();$('rememberMsg').textContent='已清除，下次不會自動帶入。'}});
 $('forgetMe').onclick=()=>{meForget();$('rememberMe').checked=false;ME_FIELDS.forEach(k=>$(k).value='');$('rememberMsg').textContent='已清除。';check()};
 
+(function initFast(){
+  let m=null;try{m=JSON.parse(localStorage.getItem('nkust-pr-applicant'))}catch{}
+  if(m){[['ftUnit','unit'],['ftName','cName'],['ftPhone','cPhone'],['ftEmail','cEmail']].forEach(([a,b])=>{if(m[b])$(a).value=m[b]})}
+  document.querySelectorAll('.fast-only input,.fast-only textarea').forEach(el=>el.addEventListener('input',()=>isFast()&&check()));
+  if(/^#(photos|補件)/.test(decodeURIComponent(location.hash))){document.querySelector('[name=mode][value=fast]').checked=true}
+})();
 if(!CONFIG.SUBMIT_URL)$('submitBtn').textContent='產生申請表（Word）';
-check();
+setMode();
 </script>
 </body>
 </html>
