@@ -90,6 +90,8 @@ button.small{padding:5px 10px;font-size:14px}
 .cap-row textarea{min-height:90px}
 .cap-row .pic .pick-btn{font-size:13px}
 @media (max-width:640px){.cap-row{grid-template-columns:1fr 32px}.cap-row .no{grid-column:1;grid-row:1;text-align:left;padding-top:2px}.cap-row .x-btn{grid-column:2;grid-row:1}.cap-row .pic,.cap-row .txt{grid-column:1/3}}
+.remember{margin-top:8px;font-size:14px}
+.linkbtn{border:0;background:none;color:var(--brand);text-decoration:underline;padding:0 4px;font-size:13.5px}
 .up-ok{background:var(--ok-soft);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:14px}
 .photo-res div{padding:5px 8px;border-radius:6px;margin-bottom:4px}
 .photo-res .pass{background:var(--ok-soft)}.photo-res .fail{background:var(--err-soft)}
@@ -193,7 +195,13 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
       <tr><th>* 聯絡窗口</th><td><div class="row3">
         <input type="text" id="cName" placeholder="姓名">
         <input type="tel" id="cPhone" placeholder="分機／手機">
-        <input type="email" id="cEmail" placeholder="Email"></div></td></tr>
+        <input type="email" id="cEmail" placeholder="Email"></div>
+        <div class="remember">
+          <label class="chk"><input type="checkbox" id="rememberMe">記住申請單位與聯絡窗口，下次自動帶入</label>
+          <span class="hint">（只存在這台電腦的瀏覽器；公用電腦請勿勾選）</span>
+          <button type="button" class="linkbtn hidden" id="forgetMe">清除已儲存的資料</button>
+          <span class="hint" id="rememberMsg"></span>
+        </div></td></tr>
       <tr><th>* 活動或成果名稱</th><td><input type="text" id="eventName"></td></tr>
       <tr><th>事件日期<span class="hint">活動舉行日或成果擬公布日；無預定日期之成果報導免填</span></th>
         <td><input type="date" id="eventDate"></td></tr>
@@ -264,12 +272,18 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
 <section class="card hidden" id="sec5">
   <h2>五、社群素材（申請 Facebook／Instagram 者填寫）</h2>
   <div class="body">
+    <table class="form" style="margin-bottom:14px">
+      <tr><th>* 發佈平台<span class="hint">可複選</span></th>
+        <td><label class="chk"><input type="checkbox" name="platform" value="Facebook">Facebook</label>
+          <label class="chk"><input type="checkbox" name="platform" value="Instagram">Instagram</label>
+          <div class="hint">※ Instagram 以學生事務及校內宣傳為主，其他訊息請選 Facebook。</div></td></tr>
+    </table>
     <div class="ai-box" style="margin:0 0 14px">
-      <b>AI 協助撰寫貼文（高科iAI）</b> <span class="hint">輸入活動重點，AI 會產生 FB 與 IG 兩個版本：FB 版資訊完整，IG 版針對學生族群、簡短活潑並附 hashtag。上方基本資料、預定發文日與相關連結會一併提供給 AI。</span>
+      <b>AI 協助撰寫貼文（高科iAI）</b> <span class="hint">輸入活動重點，AI 會依勾選的發佈平台產生貼文：FB 版資訊完整，IG 版針對學生族群、簡短活潑並附 hashtag。上方基本資料、預定發文日與相關連結會一併提供給 AI。</span>
       <div class="notice info hidden" id="socialFromNews" style="margin-top:8px">✓ 已偵測到第三項新聞稿內容，AI 會以新聞稿為主濃縮改寫成貼文。下方可留空，或補充社群專屬資訊（如報名連結、抽獎辦法、集合時間）。</div>
       <textarea id="socialNotes" style="margin-top:8px;min-height:110px" placeholder="例如：&#10;- 11/20 職涯博覽會，燕巢校區活動中心 10:00–16:00&#10;- 80 家企業、超過 1,000 個職缺&#10;- 現場有履歷健診、模擬面試&#10;- 集點可抽 AirPods"></textarea>
       <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
-        <button type="button" class="small" id="aiSocial">生成 FB／IG 貼文</button>
+        <button type="button" class="small" id="aiSocial">生成社群貼文</button>
         <button type="button" class="small hidden" id="aiSocialApply" style="background:var(--brand);color:#fff">套用到貼文內容</button>
         <button type="button" class="small" id="aiSet3">AI 設定</button>
       </div>
@@ -302,7 +316,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
     <div class="hint hidden" id="uploadOff" style="margin-top:4px">※ 照片上傳功能尚未啟用：照片縮圖會放進申請表供對照，原檔請另提供雲端連結。</div>
     <div class="cap-list" id="capList"></div>
     <table class="form" style="margin-top:10px">
-      <tr><th>照片下載連結<span class="hint">未上傳照片者填寫：雲端資料夾連結，或註明另檔寄送</span></th><td><input type="text" id="photoLink"></td></tr>
+      <tr><th>照片下載連結<span class="hint">選填：雲端資料夾連結，或註明另檔寄送</span></th><td><input type="text" id="photoLink"></td></tr>
     </table>
   </div>
 </section>
@@ -395,6 +409,7 @@ function fmt(d){return `${d.getFullYear()-1911}年${d.getMonth()+1}月${d.getDat
 function parseDate(s){if(!s)return null;const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
 function diffDays(a,b){return Math.round((a-b)/86400000)}
 const chars=s=>s.replace(/\s/g,'').length;
+function platforms(){return [...document.querySelectorAll('[name=platform]:checked')].map(x=>x.value)}
 function cats(){return [...document.querySelectorAll('[data-cat]')].filter(c=>c.checked).map(c=>c.dataset.cat)}
 
 let items=[];      // 第六項：{photo:info|null, caption:''}
@@ -577,6 +592,7 @@ function check(){
   }
 
   /* 五、社群 */
+  if(isSocial&&!platforms().length)E.push('請勾選發佈平台（Facebook／Instagram）');
   if(isSocial&&!val('postText'))E.push('請填貼文內容或重點');
   if(isSocial&&/○○/.test(val('postText')))W.push('貼文內容仍有「○○」待補資訊');
 
@@ -584,7 +600,6 @@ function check(){
   if(!$('sec6').classList.contains('hidden')){
     const withPhoto=items.filter(x=>x.photo);
     const willUpload=CONFIG.BACKEND_URL&&withPhoto.length;
-    if(!willUpload&&!val('photoLink'))E.push(CONFIG.BACKEND_URL?'請上傳照片，或提供照片下載連結／註明另檔寄送':'請提供照片下載連結或註明另檔寄送');
     document.querySelectorAll('.cap').forEach((inp,i)=>{const s=inp.value.trim(),l=chars(s),ct=inp.nextElementSibling;
       if(!s){ct.textContent='';return}
       ct.textContent=`${l} 字`;ct.className='counter '+(l>CONFIG.CAPTION_MAX?'bad':'ok');
@@ -637,7 +652,7 @@ function collect(){
     auth:(document.querySelector('[name=auth]:checked')||{}).value||'',authNote:val('authNote'),
     flow:val('flow'),endTime:val('endTime'),guests4:val('guests4'),project:val('project'),
     focus:[val('fc1'),val('fc2'),val('fc3')].filter(Boolean),site:{name:val('siteName'),phone:val('sitePhone')},
-    postText:val('postText'),postLink:val('postLink'),
+    platforms:platforms(),postText:val('postText'),postLink:val('postLink'),
     assets:[...(assets.length?[`${assets.map((p,i)=>`素材${i+1}：${p.name}`).join('、')}${uploaded&&uploaded.assetCount?`（已上傳：${uploaded.url}）`:''}`]:[]),...(val('assets')?[val('assets')]:[])].join('\n'),
     photoLink:uploaded&&uploaded.photoCount?`${uploaded.url}（已上傳 ${uploaded.photoCount} 張）`+(val('photoLink')?`\n${val('photoLink')}`:''):val('photoLink'),
     figures:items.map((x,i)=>({no:i+1,caption:x.caption.trim(),photo:x.photo})).filter(x=>x.photo||x.caption),
@@ -654,7 +669,7 @@ ${row('申請項目',d.categories.join('、'))}${row('校外稿理由',d.externa
 ${row('申請單位',d.unit)}${row('聯絡窗口',`${d.contact.name}／${d.contact.phone}／${d.contact.email}`)}${row('活動或成果名稱',d.eventName)}${row('事件日期',d.eventDate)}${row('事件地點',d.eventPlace)}
 ${row('新聞標題',d.title)}${row('事件亮點',d.highlights.map((h,i)=>`${i+1}. ${h}`).join('\n'))}${row('出席貴賓',d.guests)}${row('初稿內文',d.body)}${row('修改授權',d.auth+(d.authNote?'（'+d.authNote+'）':''))}
 ${row('活動流程',d.flow)}${row('活動結束時間',d.endTime)}${row('出席貴賓（採訪）',d.guests4)}${row('計畫名稱',d.project)}${row('採訪重點',d.focus.map((h,i)=>`${i+1}. ${h}`).join('\n'))}${row('現場聯絡人',d.site.name?`${d.site.name}／${d.site.phone}`:'')}
-${row('貼文內容',d.postText)}${row('相關連結',d.postLink)}${row('素材',d.assets)}
+${row('發佈平台',d.platforms.join('、'))}${row('貼文內容',d.postText)}${row('相關連結',d.postLink)}${row('素材',d.assets)}
 ${row('照片連結',d.photoLink)}${row('圖說',d.figures.map(f=>`圖${f.no} ${f.caption}`).join('\n'))}
 ${row('系統檢核提醒',d.warnings.join('\n'))}
 </table>`;
@@ -669,6 +684,7 @@ $('submitBtn').onclick=async()=>{
     catch(err){res.innerHTML=`<div class="notice err">上傳失敗：${esc(err.message)}。請稍後再按一次，或移除檔案改填雲端連結。</div>`;$('submitBtn').disabled=false;return}
     $('submitBtn').disabled=false;
   }
+  meSave();
   const d=collect();
   if(CONFIG.SUBMIT_URL){
     $('submitBtn').disabled=true;res.innerHTML='<div class="notice info">送出中…</div>';
@@ -811,7 +827,7 @@ async function buildDocx(d){
 
   // 五、社群素材
   if(isSocial){const r=rows('五、');
-    setCell(cells(r[0])[1],lines(d.postText));
+    setCell(cells(r[0])[1],[`發佈平台：${['Facebook','Instagram'].map(p=>(d.platforms.includes(p)?'■ ':'□ ')+p).join('　')}`,...lines(d.postText)]);
     if(d.postLink)setCell(cells(r[1])[1],[d.postLink]);else drop(r[1]);
     if(d.assets)setCell(cells(r[2])[1],[d.assets]);else drop(r[2]);
   }else dropSection('五、');
@@ -989,7 +1005,8 @@ Instagram 版：
 - 重點資訊用 emoji 條列。
 - 文末另起一行放 hashtag 5 至 8 個，包含 #高科大 #NKUST，其餘依活動主題。
 只輸出一個 JSON 物件，不要有其他文字或 Markdown，格式：
-{"fb":"FB 貼文全文（含 hashtag，分行用\\n）","ig":"IG 貼文全文（含 hashtag，分行用\\n）","missing":["待補資訊"]}`;
+{"fb":"FB 貼文全文（含 hashtag，分行用\\n）","ig":"IG 貼文全文（含 hashtag，分行用\\n）","missing":["待補資訊"]}
+只撰寫【發佈平台】指定的平台；未指定的平台，該欄位填空字串。`;
 let lastSocial=null;
 $('aiSet3').onclick=()=>$('aiSet').click();
 function newsForSocial(){
@@ -1000,19 +1017,22 @@ function newsForSocial(){
 $('aiSocial').onclick=async()=>{
   const s=aiLoad(),out=$('socialOut');
   if(!aiReady()){$('aiSet').click();return}
+  const plats=platforms();
+  if(!plats.length){out.textContent='請先勾選發佈平台（Facebook／Instagram）。';return}
+  const wantFb=plats.includes('Facebook'),wantIg=plats.includes('Instagram');
   const notes=$('socialNotes').value.trim()||val('postText');
   const news=newsForSocial();
   if(!news&&chars(notes)<10){out.textContent='請先輸入一些活動重點（至少一兩句）。';return}
   const c=cats();const types=[c.includes('fbPre')?'活動預告':'',c.includes('fbPost')?'活動花絮、成果':'',c.includes('fbBig')?'大型企劃':''].filter(Boolean).join('、')||'（未勾選）';
-  const ctx=[`貼文類型：${types}`,`申請單位：${val('unit')||'（未填）'}`,`活動或成果名稱：${val('eventName')||'（未填）'}`,
+  const ctx=[`發佈平台：${plats.join('、')}`,`貼文類型：${types}`,`申請單位：${val('unit')||'（未填）'}`,`活動或成果名稱：${val('eventName')||'（未填）'}`,
     `事件日期：${val('eventDate')?roc(val('eventDate')):'（未填）'}`,`事件地點：${val('eventPlace')||'（未填）'}`,
     val('postDate')?`預定發文日：${roc(val('postDate'))}`:'',val('postLink')?`相關連結：${val('postLink')}`:'相關連結：（無）',`今天日期：${fmt(today)}`].filter(Boolean).join('\n');
   out.textContent='AI 撰寫中…';$('aiSocialApply').classList.add('hidden');$('aiSocial').disabled=true;
   try{
     const raw=(await aiChat([{role:'system',content:SOCIAL_SYS},{role:'user',content:`【基本資料】\n${ctx}`+(news?`\n\n【新聞稿】\n${news}`:'')+(notes?`\n\n【${news?'補充資訊':'申請單位提供的活動重點'}】\n${notes}`:'')}],0.7)||'').replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'');
-    let d;try{const a=raw.indexOf('{'),b=raw.lastIndexOf('}');d=JSON.parse(raw.slice(a,b+1));if(!d.fb||!d.ig)throw 0}catch{out.textContent=raw||'AI 回傳格式無法解析，請再試一次。';return}
-    d.fb=d.fb.replace(/\\n/g,'\n');d.ig=d.ig.replace(/\\n/g,'\n');d.missing=d.missing||[];lastSocial=d;
-    out.textContent=`【Facebook 版】（${chars(d.fb)} 字）\n${d.fb}\n\n【Instagram 版】（${chars(d.ig)} 字）\n${d.ig}`+(d.missing.length?`\n\n【待補資訊】\n${d.missing.map(m=>'・'+m).join('\n')}`:'');
+    let d;try{const a=raw.indexOf('{'),b=raw.lastIndexOf('}');d=JSON.parse(raw.slice(a,b+1));if((wantFb&&!d.fb)||(wantIg&&!d.ig))throw 0}catch{out.textContent=raw||'AI 回傳格式無法解析，請再試一次。';return}
+    d.fb=wantFb?String(d.fb).replace(/\\n/g,'\n'):'';d.ig=wantIg?String(d.ig).replace(/\\n/g,'\n'):'';d.missing=d.missing||[];lastSocial=d;
+    out.textContent=[d.fb?`【Facebook 版】（${chars(d.fb)} 字）\n${d.fb}`:'',d.ig?`【Instagram 版】（${chars(d.ig)} 字）\n${d.ig}`:''].filter(Boolean).join('\n\n')+(d.missing.length?`\n\n【待補資訊】\n${d.missing.map(m=>'・'+m).join('\n')}`:'');
     $('aiSocialApply').classList.remove('hidden');
   }catch(err){out.textContent=aiErr(err)}
   finally{$('aiSocial').disabled=false}
@@ -1020,9 +1040,21 @@ $('aiSocial').onclick=async()=>{
 $('aiSocialApply').onclick=()=>{
   if(!lastSocial)return;
   if(val('postText')&&!confirm('貼文內容已有文字，要用 AI 草稿覆蓋嗎？'))return;
-  $('postText').value=`【Facebook】\n${lastSocial.fb}\n\n【Instagram】\n${lastSocial.ig}`;check();
+  $('postText').value=[lastSocial.fb?`【Facebook】\n${lastSocial.fb}`:'',lastSocial.ig?`【Instagram】\n${lastSocial.ig}`:''].filter(Boolean).join('\n\n');check();
   $('postText').scrollIntoView({behavior:'smooth',block:'center'});
 };
+
+/* ===== 記住申請人資訊（瀏覽器 localStorage） ===== */
+const ME_KEY='nkust-pr-applicant';
+const ME_FIELDS=['unit','cName','cPhone','cEmail'];
+function meSave(){if(!$('rememberMe').checked)return;
+  try{localStorage.setItem(ME_KEY,JSON.stringify(Object.fromEntries(ME_FIELDS.map(k=>[k,val(k)]))));$('forgetMe').classList.remove('hidden')}catch{}}
+function meForget(){try{localStorage.removeItem(ME_KEY)}catch{}$('forgetMe').classList.add('hidden')}
+(function meLoad(){let m=null;try{m=JSON.parse(localStorage.getItem(ME_KEY))}catch{}
+  if(m&&typeof m==='object'){ME_FIELDS.forEach(k=>{if(m[k]&&!val(k))$(k).value=m[k]});$('rememberMe').checked=true;$('forgetMe').classList.remove('hidden');$('rememberMsg').textContent='已帶入上次儲存的資料。'}})();
+ME_FIELDS.forEach(k=>$(k).addEventListener('change',meSave));
+$('rememberMe').addEventListener('change',()=>{if($('rememberMe').checked){meSave();$('rememberMsg').textContent='已儲存。'}else{meForget();$('rememberMsg').textContent='已清除，下次不會自動帶入。'}});
+$('forgetMe').onclick=()=>{meForget();$('rememberMe').checked=false;ME_FIELDS.forEach(k=>$(k).value='');$('rememberMsg').textContent='已清除。';check()};
 
 if(!CONFIG.SUBMIT_URL)$('submitBtn').textContent='產生申請表（Word）';
 check();
