@@ -366,6 +366,9 @@ const CONFIG = {
   // 填入後：照片上傳至 Google Drive，AI 功能使用公關中心內建的高科iAI 帳號（申請人不必有 key）。
   // 留空：停用照片上傳；AI 功能需申請人自行設定 API key。
   BACKEND_URL: '',
+  // true：AI 透過後端使用公關中心內建的 key；false：申請人自行貼上 key（瀏覽器直接連 iAI）
+  // 目前 Google 伺服器連不到高科iAI，先設為 false
+  AI_VIA_BACKEND: false,
   PHOTO_MAX_MB: 25
 };
 const CAT_NAME = {internal:'校內稿',external:'校外稿',notice:'採訪通知',staff:'請公關中心協助',result:'無預定日期之成果報導',fbPre:'FB/IG 活動預告',fbPost:'FB/IG 活動花絮、成果',fbBig:'FB/IG 大型企劃'};
@@ -781,7 +784,7 @@ async function buildDocx(d){
 const AI_KEY='nkust-iai-settings';
 const AI_DEFAULT={base:'https://www.iai.nkust.edu.tw/aihub/v1',models:['Furen-large','Furen-max']};
 function aiLoad(){let s={};try{s=JSON.parse(localStorage.getItem(AI_KEY))||{}}catch{}return {base:s.base||AI_DEFAULT.base,model:s.model||AI_DEFAULT.models[0],key:s.key||'',models:s.models||AI_DEFAULT.models}}
-const SHARED=!!CONFIG.BACKEND_URL;
+const SHARED=!!CONFIG.BACKEND_URL&&CONFIG.AI_VIA_BACKEND;
 const aiReady=()=>SHARED||!!aiLoad().key;
 async function aiChat(messages,temperature){
   const s=aiLoad();
