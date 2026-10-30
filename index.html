@@ -74,12 +74,22 @@ button.small{padding:5px 10px;font-size:14px}
 .pick-btn{display:inline-block;border:1px solid var(--brand);color:var(--brand);border-radius:8px;padding:5px 12px;cursor:pointer;font-size:14px}
 .pick-btn:hover{background:var(--brand-soft)}
 .photo-list{display:grid;gap:8px;margin-top:10px}
-.ph{display:grid;grid-template-columns:28px 72px 1fr 32px;gap:10px;align-items:center;padding:6px 8px;border-radius:8px;font-size:13.5px}
+.ph{display:grid;grid-template-columns:44px 72px 1fr 32px;gap:10px;align-items:center;padding:6px 8px;border-radius:8px;font-size:13.5px}
 .ph.pass{background:var(--ok-soft)}.ph.fail{background:var(--warn-soft)}
 .ph img{width:72px;height:48px;object-fit:cover;border-radius:4px;background:#ddd}
 .ph b{color:var(--muted);font-weight:600;text-align:center}
 .x-btn{border:0;background:none;color:var(--muted);font-size:20px;line-height:1;padding:2px 6px;cursor:pointer}
 .x-btn:hover{color:var(--err);background:#fff}
+.cap-list{display:grid;gap:10px;margin-top:10px}
+.cap-row{display:grid;grid-template-columns:44px 200px 1fr 32px;gap:12px;align-items:start;border:1px solid var(--line);border-radius:10px;padding:10px}
+.cap-row .no{font-weight:700;color:var(--brand);padding-top:6px;text-align:center}
+.cap-row .pic{border-radius:8px;overflow:hidden;background:var(--bg);min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.cap-row .pic img{width:100%;height:133px;object-fit:cover;display:block}
+.cap-row .pic .meta{font-size:12px;padding:4px 6px;width:100%;line-height:1.4}
+.cap-row .pic .meta.fail{background:var(--warn-soft);color:#5c3b00}.cap-row .pic .meta.pass{background:var(--ok-soft);color:#0f4a2a}
+.cap-row textarea{min-height:90px}
+.cap-row .pic .pick-btn{font-size:13px}
+@media (max-width:640px){.cap-row{grid-template-columns:1fr 32px}.cap-row .no{grid-column:1;grid-row:1;text-align:left;padding-top:2px}.cap-row .x-btn{grid-column:2;grid-row:1}.cap-row .pic,.cap-row .txt{grid-column:1/3}}
 .up-ok{background:var(--ok-soft);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:14px}
 .photo-res div{padding:5px 8px;border-radius:6px;margin-bottom:4px}
 .photo-res .pass{background:var(--ok-soft)}.photo-res .fail{background:var(--err-soft)}
@@ -156,7 +166,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
       <tr><th>本校官方 Facebook／Instagram</th>
         <td><label class="chk"><input type="checkbox" data-cat="fbPre">活動預告（報名、宣傳）</label>
           <input type="date" id="postDate" class="inline-in" title="預定發文日">
-          <span class="hint">預定發文日前 3 日，並附確認版圖卡　<span class="status" id="st-fbPre"></span></span><br>
+          <span class="hint">預定發文日前 3 日　<span class="status" id="st-fbPre"></span></span><br>
           <label class="chk"><input type="checkbox" data-cat="fbPost">活動花絮、成果</label>
           <span class="hint">事件日後 1 日內提供照片及重點文字　<span class="status" id="st-fbPost"></span></span><br>
           <label class="chk"><input type="checkbox" data-cat="fbBig">大型企劃（直播、短影音、抽獎、系列宣傳）</label>
@@ -269,7 +279,11 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
     <table class="form">
       <tr><th>* 貼文內容</th><td><textarea id="postText" style="min-height:200px" placeholder="提供貼文文案或重點；含活動名稱、日期、地點等，由公關中心依平台改寫"></textarea></td></tr>
       <tr><th>相關連結</th><td><input type="url" id="postLink" placeholder="如報名網址；無則免填"></td></tr>
-      <tr><th>素材檔名／下載連結</th><td><input type="text" id="assets" placeholder="活動預告附確認版圖卡；花絮、成果附照片"></td></tr>
+      <tr><th>素材<span class="hint">活動預告附確認版圖卡；花絮、成果附照片</span></th>
+        <td><label class="small pick-btn"><input type="file" id="assetFiles" accept="image/*" multiple hidden>＋ 選擇圖片</label>
+          <span class="hint" id="assetCount"></span>
+          <div class="photo-list" id="assetList"></div>
+          <input type="text" id="assets" style="margin-top:8px" placeholder="或提供素材下載連結（雲端資料夾）；無則免填"></td></tr>
     </table>
   </div>
 </section>
@@ -279,18 +293,17 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
   <h2>六、照片及圖說</h2>
   <div class="body">
     <div class="notice info">照片規格：橫式為主，寬高比 3:2；長邊 3000 像素以上（如 3000×2000）；JPG 原檔，單檔 2MB 以上。新聞稿 5 張以內；社群貼文可提供多張供挑選。以簽約、頒獎、操作、互動等動態畫面為主，團體合照至多 1 張。圖說寫法請參閱<a href="BC03-writing-guide.pdf" target="_blank" rel="noopener">新聞稿撰寫指引（PDF）</a>。</div>
-    <table class="form">
-      <tr><th>上傳照片<span class="hint">選取後會先檢查規格；產生申請表時一併上傳至公關中心雲端</span></th>
-        <td><label class="small pick-btn"><input type="file" id="photoFiles" accept="image/jpeg,image/png,image/heic,image/*" multiple hidden>＋ 選擇照片</label>
-          <span class="hint" id="photoCount"></span>
-          <div class="hint hidden" id="uploadOff">照片上傳功能尚未啟用，請先在下方提供雲端連結。</div>
-          <div class="photo-list" id="photoList"></div></td></tr>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <label class="small pick-btn"><input type="file" id="photoFiles" accept="image/jpeg,image/png,image/heic,image/*" multiple hidden>＋ 選擇照片（可多選）</label>
+      <button type="button" class="small" id="addCap">＋ 增列一則（不附照片）</button>
+      <span class="hint" id="photoCount"></span>
+    </div>
+    <div class="hint" style="margin-top:6px">每張照片右側填寫對應的圖說（建議 10–40 字；有人物時標註單位、職稱、姓名及位置，如左一、右二；社群照片可免填）。照片會先檢查規格，產生申請表時一併上傳。</div>
+    <div class="hint hidden" id="uploadOff" style="margin-top:4px">※ 照片上傳功能尚未啟用：照片縮圖會放進申請表供對照，原檔請另提供雲端連結。</div>
+    <div class="cap-list" id="capList"></div>
+    <table class="form" style="margin-top:10px">
       <tr><th>照片下載連結<span class="hint">未上傳照片者填寫：雲端資料夾連結，或註明另檔寄送</span></th><td><input type="text" id="photoLink"></td></tr>
     </table>
-    <table class="form caps" id="capTable" style="margin-top:10px">
-      <tr><th style="width:70px">編號</th><th>新聞圖說（建議 10–40 字；有人物時標註單位、職稱、姓名及位置，如左一、右二；社群照片可免填）</th><th style="width:44px"></th></tr>
-    </table>
-    <button type="button" class="small" id="addCap" style="margin-top:8px">＋ 增列圖說</button>
   </div>
 </section>
 
@@ -384,58 +397,92 @@ function diffDays(a,b){return Math.round((a-b)/86400000)}
 const chars=s=>s.replace(/\s/g,'').length;
 function cats(){return [...document.querySelectorAll('[data-cat]')].filter(c=>c.checked).map(c=>c.dataset.cat)}
 
-let photos=[];        // {file,name,size,w,h,url,problems}
-let uploaded=null;    // {sig,url,count}
+let items=[];      // 第六項：{photo:info|null, caption:''}
+let assets=[];     // 第五項素材：info
+let uploaded=null; // {sig,url,photoCount,assetCount}
 
-/* 圖說列：預設 1 列，可增可刪 */
-function renumberCaps(){[...$('capTable').rows].slice(1).forEach((r,i)=>r.cells[0].textContent=`圖${i+1}`)}
-function addCaption(){const t=$('capTable');const r=t.insertRow();
-  r.innerHTML=`<td></td><td><input type="text" class="cap"><div class="counter"></div></td><td style="text-align:center"><button type="button" class="x-btn" title="刪除這則圖說" aria-label="刪除圖說">×</button></td>`;
-  r.querySelector('input').addEventListener('input',check);
-  r.querySelector('.x-btn').onclick=()=>{if(t.rows.length>2)r.remove();else r.querySelector('input').value='';renumberCaps();check()};
-  renumberCaps();return r}
-addCaption();
-$('addCap').onclick=()=>{addCaption().querySelector('input').focus();check()};
-
-/* 照片：選取、規格檢核、刪除 */
-const sigOf=()=>photos.map(p=>p.name+':'+p.size).join('|');
-async function inspect(f){
+const fileSig=()=>[...assets.map(a=>'A'+a.name+':'+a.size),...items.filter(x=>x.photo).map(x=>'P'+x.photo.name+':'+x.photo.size)].join('|');
+async function inspect(f,specCheck=true){
   const info={file:f,name:f.name,size:f.size,url:URL.createObjectURL(f),jpg:/jpe?g$/i.test(f.type)||/\.jpe?g$/i.test(f.name)};
-  try{const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=info.url});info.w=img.naturalWidth;info.h=img.naturalHeight}catch{info.w=0;info.h=0}
+  try{const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=info.url});info.w=img.naturalWidth;info.h=img.naturalHeight;info.ok=true}catch{info.w=0;info.h=0}
   const p=[];
-  if(info.size>CONFIG.PHOTO_MAX_MB*1048576)p.push(`檔案超過 ${CONFIG.PHOTO_MAX_MB}MB，無法上傳`);
-  if(!info.jpg)p.push('非 JPG 檔');
-  if(info.size<2*1024*1024)p.push(`${(info.size/1048576).toFixed(1)}MB，未達 2MB`);
-  if(info.w){const L=Math.max(info.w,info.h);if(L<3000)p.push(`長邊 ${L}px，未達 3000px`);
-    if(info.w<info.h)p.push('直式（建議橫式）');
-    const ratio=L/Math.max(1,Math.min(info.w,info.h));if(Math.abs(ratio-1.5)>0.05)p.push(`比例 ${ratio.toFixed(2)}:1，非 3:2`)}
+  if(info.size>CONFIG.PHOTO_MAX_MB*1048576)p.push(`超過 ${CONFIG.PHOTO_MAX_MB}MB，無法上傳`);
+  if(specCheck){
+    if(!info.jpg)p.push('非 JPG');
+    if(info.size<2*1024*1024)p.push('未達 2MB');
+    if(info.w){const L=Math.max(info.w,info.h);if(L<3000)p.push(`長邊 ${L}px（需 3000）`);
+      if(info.w<info.h)p.push('直式');
+      const ratio=L/Math.max(1,Math.min(info.w,info.h));if(Math.abs(ratio-1.5)>0.05)p.push('非 3:2')}}
   info.problems=p;return info}
-function renderPhotos(){
-  $('photoList').innerHTML='';
-  photos.forEach((p,i)=>{const d=document.createElement('div');d.className='ph '+(p.problems.length?'fail':'pass');
-    d.innerHTML=`<b>圖${i+1}</b><img alt="" src="${p.url}"><div>${esc(p.name)}<br><span class="hint">${p.w?p.w+'×'+p.h+'，':''}${(p.size/1048576).toFixed(1)}MB${p.problems.length?'　！'+esc(p.problems.join('；')):'　✓ 符合規格'}</span></div><button type="button" class="x-btn" title="移除這張照片" aria-label="移除照片">×</button>`;
-    d.querySelector('.x-btn').onclick=()=>{URL.revokeObjectURL(p.url);photos.splice(i,1);renderPhotos();check()};
-    $('photoList').appendChild(d)});
-  $('photoCount').textContent=photos.length?`已選 ${photos.length} 張（依此順序編號為圖1、圖2…，圖說請對應）`:'';
-  if(uploaded&&uploaded.sig!==sigOf())uploaded=null;
+const metaText=p=>`${p.w?p.w+'×'+p.h+'・':''}${(p.size/1048576).toFixed(1)}MB${p.problems.length?'<br>！'+esc(p.problems.join('、')):'・✓ 符合規格'}`;
+
+/* 第六項：照片＋圖說同一列 */
+function renderItems(){
+  const box=$('capList');box.innerHTML='';
+  items.forEach((it,i)=>{
+    const row=document.createElement('div');row.className='cap-row';
+    const pic=it.photo?`<img alt="圖${i+1}" src="${it.photo.url}"><div class="meta ${it.photo.problems.length?'fail':'pass'}">${esc(it.photo.name)}<br>${metaText(it.photo)}</div>`
+      :`<label class="small pick-btn"><input type="file" accept="image/*" hidden>＋ 加入照片</label><div class="hint" style="margin-top:4px">未附照片</div>`;
+    row.innerHTML=`<div class="no">圖${i+1}</div><div class="pic">${pic}</div><div class="txt"><textarea class="cap" placeholder="圖${i+1} 圖說，例如：校長吳忠信（左二）與企業代表簽署合作備忘錄"></textarea><div class="counter"></div></div><button type="button" class="x-btn" title="刪除這張照片與圖說" aria-label="刪除">×</button>`;
+    const ta=row.querySelector('textarea');ta.value=it.caption;ta.addEventListener('input',()=>{it.caption=ta.value;check()});
+    const one=row.querySelector('input[type=file]');
+    if(one)one.onchange=async e=>{const f=e.target.files[0];if(!f)return;it.photo=await inspect(f);renderItems();check()};
+    row.querySelector('.x-btn').onclick=()=>{if(it.photo)URL.revokeObjectURL(it.photo.url);items.splice(i,1);if(!items.length)items.push({photo:null,caption:''});renderItems();check()};
+    box.appendChild(row)});
+  const n=items.filter(x=>x.photo).length;
+  $('photoCount').textContent=n?`已選 ${n} 張照片`:'';
+  if(uploaded&&uploaded.sig!==fileSig())uploaded=null;
 }
 $('photoFiles').addEventListener('change',async e=>{
-  for(const f of [...e.target.files])photos.push(await inspect(f));
-  e.target.value='';renderPhotos();check();
-});
+  const fs=[...e.target.files];e.target.value='';
+  for(const f of fs){const info=await inspect(f);
+    const empty=items.find(x=>!x.photo&&!x.caption.trim());
+    if(empty)empty.photo=info;else items.push({photo:info,caption:''})}
+  renderItems();check()});
+$('addCap').onclick=()=>{items.push({photo:null,caption:''});renderItems();check();const t=[...document.querySelectorAll('.cap')].pop();t&&t.focus()};
+items.push({photo:null,caption:''});renderItems();
+
+/* 第五項：素材圖片 */
+function renderAssets(){
+  const box=$('assetList');box.innerHTML='';
+  assets.forEach((p,i)=>{const d=document.createElement('div');d.className='ph '+(p.problems.length?'fail':'pass');
+    d.innerHTML=`<b>素材${i+1}</b><img alt="" src="${p.url}"><div>${esc(p.name)}<br><span class="hint">${p.w?p.w+'×'+p.h+'，':''}${(p.size/1048576).toFixed(1)}MB${p.problems.length?'　！'+esc(p.problems.join('；')):''}</span></div><button type="button" class="x-btn" title="移除" aria-label="移除">×</button>`;
+    d.querySelector('.x-btn').onclick=()=>{URL.revokeObjectURL(p.url);assets.splice(i,1);renderAssets();check()};
+    box.appendChild(d)});
+  $('assetCount').textContent=assets.length?`已選 ${assets.length} 個檔案`:'';
+  if(uploaded&&uploaded.sig!==fileSig())uploaded=null;
+}
+$('assetFiles').addEventListener('change',async e=>{for(const f of [...e.target.files])assets.push(await inspect(f,false));e.target.value='';renderAssets();check()});
+
 if(!CONFIG.BACKEND_URL)$('uploadOff').classList.remove('hidden');
 
 /* 上傳至 Google Drive（透過 Apps Script） */
 const toB64=f=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=()=>rej(new Error('讀取檔案失敗'));r.readAsDataURL(f)});
 async function gas(body){const r=await fetch(CONFIG.BACKEND_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});
   const j=await r.json();if(!j.ok)throw new Error(j.error||'上傳失敗');return j}
-async function uploadPhotos(progress){
-  if(uploaded&&uploaded.sig===sigOf())return uploaded;
+function filesToUpload(){
+  const out=[];
+  if(!$('sec5').classList.contains('hidden'))assets.forEach((p,i)=>out.push({p,prefix:`素材${i+1}_`}));
+  if(!$('sec6').classList.contains('hidden'))items.forEach((it,i)=>{if(it.photo)out.push({p:it.photo,prefix:`圖${i+1}_`})});
+  return out}
+async function uploadAll(progress){
+  if(uploaded&&uploaded.sig===fileSig())return uploaded;
+  const list=filesToUpload();
   const f=await gas({action:'folder',unit:val('unit'),eventName:val('eventName'),eventDate:val('eventDate'),contact:val('cName'),email:val('cEmail')});
-  for(let i=0;i<photos.length;i++){const p=photos[i];progress(`上傳照片 ${i+1}／${photos.length}：${p.name}`);
-    const ext=(p.name.match(/\.[^.]+$/)||['.jpg'])[0];
-    await gas({action:'file',folderId:f.folderId,token:f.token,name:`圖${i+1}_${p.name.replace(ext,'')}${ext}`,mimeType:p.file.type||'image/jpeg',data:await toB64(p.file)})}
-  uploaded={sig:sigOf(),url:f.url,count:photos.length};return uploaded}
+  for(let i=0;i<list.length;i++){const {p,prefix}=list[i];progress(`上傳檔案 ${i+1}／${list.length}：${p.name}`);
+    await gas({action:'file',folderId:f.folderId,token:f.token,name:prefix+p.name,mimeType:p.file.type||'image/jpeg',data:await toB64(p.file)})}
+  uploaded={sig:fileSig(),url:f.url,photoCount:list.filter(x=>x.prefix.startsWith('圖')).length,assetCount:list.filter(x=>x.prefix.startsWith('素材')).length};
+  return uploaded}
+
+/* Word 用縮圖 */
+async function thumb(info,maxW=900){
+  if(!info.ok)return null;
+  const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=info.url});
+  const k=Math.min(1,maxW/Math.max(img.naturalWidth,img.naturalHeight));
+  const c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*k);c.height=Math.round(img.naturalHeight*k);
+  c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+  const blob=await new Promise(r=>c.toBlob(r,'image/jpeg',0.82));
+  return {buf:await blob.arrayBuffer(),w:c.width,h:c.height}}
 
 /* 主檢核 */
 function check(){
@@ -472,8 +519,7 @@ function check(){
   }
   if(c.includes('fbPre')){const pd=parseDate(val('postDate')),st=$('st-fbPre');
     if(!pd){E.push('活動預告請填預定發文日')}
-    else{const d=diffDays(pd,today);if(d>=3){st.textContent=`✓ 距發文日 ${d} 日`;st.className='status ok'}else{st.textContent=`✗ 距發文日僅 ${d} 日（需 3 日）`;st.className='status bad';overdue=true;W.push('活動預告已逾申請期限（需發文日前 3 日）')}}
-    if(!val('assets'))E.push('活動預告須附確認版圖卡（第五項素材檔名／連結）')}
+    else{const d=diffDays(pd,today);if(d>=3){st.textContent=`✓ 距發文日 ${d} 日`;st.className='status ok'}else{st.textContent=`✗ 距發文日僅 ${d} 日（需 3 日）`;st.className='status bad';overdue=true;W.push('活動預告已逾申請期限（需發文日前 3 日）')}}}
   if(c.includes('fbPost')&&ev){const d=diffDays(today,ev),st=$('st-fbPost');
     if(d<0){st.textContent='活動尚未舉行';st.className='status wait';W.push('花絮、成果請於活動後 1 日內提供，目前事件日尚未到')}
     else if(d<=1){st.textContent='✓ 於事件日後 1 日內';st.className='status ok'}
@@ -536,18 +582,22 @@ function check(){
 
   /* 六、照片圖說 */
   if(!$('sec6').classList.contains('hidden')){
-    const willUpload=CONFIG.BACKEND_URL&&photos.length;
+    const withPhoto=items.filter(x=>x.photo);
+    const willUpload=CONFIG.BACKEND_URL&&withPhoto.length;
     if(!willUpload&&!val('photoLink'))E.push(CONFIG.BACKEND_URL?'請上傳照片，或提供照片下載連結／註明另檔寄送':'請提供照片下載連結或註明另檔寄送');
-    const caps=[...document.querySelectorAll('.cap')];let filled=0;
-    caps.forEach((inp,i)=>{const s=inp.value.trim(),l=chars(s),ct=inp.nextElementSibling;
-      if(!s){ct.textContent='';return}filled++;
+    document.querySelectorAll('.cap').forEach((inp,i)=>{const s=inp.value.trim(),l=chars(s),ct=inp.nextElementSibling;
+      if(!s){ct.textContent='';return}
       ct.textContent=`${l} 字`;ct.className='counter '+(l>CONFIG.CAPTION_MAX?'bad':'ok');
       if(l>CONFIG.CAPTION_MAX)W.push(`圖${i+1} 圖說 ${l} 字，建議 ${CONFIG.CAPTION_MAX} 字內`)});
-    if(isNews&&!filled)I.push('新聞稿照片建議附上圖說');
-    const nPh=Math.max(photos.length,filled);
-    if(isNews&&nPh>CONFIG.NEWS_PHOTO_MAX)W.push(`新聞稿照片以 ${CONFIG.NEWS_PHOTO_MAX} 張為限，目前 ${nPh} 張`);
-    const tooBig=photos.filter(p=>p.size>CONFIG.PHOTO_MAX_MB*1048576);if(willUpload&&tooBig.length)E.push(`${tooBig.length} 張照片超過 ${CONFIG.PHOTO_MAX_MB}MB，請移除或壓縮`);
-    const badPh=photos.filter(p=>p.problems.length);if(badPh.length)W.push(`${badPh.length} 張照片規格不符（見第六項）`);
+    const noCap=items.map((x,i)=>x.photo&&!x.caption.trim()?`圖${i+1}`:'').filter(Boolean);
+    if(isNews&&noCap.length)I.push(`${noCap.join('、')} 尚未填寫圖說`);
+    const used=items.filter(x=>x.photo||x.caption.trim()).length;
+    if(isNews&&used>CONFIG.NEWS_PHOTO_MAX)W.push(`新聞稿照片以 ${CONFIG.NEWS_PHOTO_MAX} 張為限，目前 ${used} 張`);
+    const tooBig=withPhoto.filter(x=>x.photo.size>CONFIG.PHOTO_MAX_MB*1048576);if(willUpload&&tooBig.length)E.push(`${tooBig.length} 張照片超過 ${CONFIG.PHOTO_MAX_MB}MB，請移除或壓縮`);
+    const bad=withPhoto.filter(x=>x.photo.problems.length);if(bad.length)W.push(`${bad.length} 張照片規格不符（見第六項）`);
+  }
+  if(!$('sec5').classList.contains('hidden')){
+    const big=assets.filter(p=>p.size>CONFIG.PHOTO_MAX_MB*1048576);if(CONFIG.BACKEND_URL&&big.length)E.push(`${big.length} 個素材超過 ${CONFIG.PHOTO_MAX_MB}MB，請移除或壓縮`);
   }
 
   /* 確認事項 */
@@ -587,8 +637,11 @@ function collect(){
     auth:(document.querySelector('[name=auth]:checked')||{}).value||'',authNote:val('authNote'),
     flow:val('flow'),endTime:val('endTime'),guests4:val('guests4'),project:val('project'),
     focus:[val('fc1'),val('fc2'),val('fc3')].filter(Boolean),site:{name:val('siteName'),phone:val('sitePhone')},
-    postText:val('postText'),postLink:val('postLink'),assets:val('assets'),
-    photoLink:uploaded?`${uploaded.url}（已上傳 ${uploaded.count} 張）`:val('photoLink'),photoCount:photos.length,captions:[...document.querySelectorAll('.cap')].map(x=>x.value.trim()).filter(Boolean),
+    postText:val('postText'),postLink:val('postLink'),
+    assets:[...(assets.length?[`${assets.map((p,i)=>`素材${i+1}：${p.name}`).join('、')}${uploaded&&uploaded.assetCount?`（已上傳：${uploaded.url}）`:''}`]:[]),...(val('assets')?[val('assets')]:[])].join('\n'),
+    photoLink:uploaded&&uploaded.photoCount?`${uploaded.url}（已上傳 ${uploaded.photoCount} 張）`+(val('photoLink')?`\n${val('photoLink')}`:''):val('photoLink'),
+    figures:items.map((x,i)=>({no:i+1,caption:x.caption.trim(),photo:x.photo})).filter(x=>x.photo||x.caption),
+    captions:items.map(x=>x.caption.trim()).filter(Boolean),
     warnings:check().W
   };
 }
@@ -602,18 +655,18 @@ ${row('申請單位',d.unit)}${row('聯絡窗口',`${d.contact.name}／${d.conta
 ${row('新聞標題',d.title)}${row('事件亮點',d.highlights.map((h,i)=>`${i+1}. ${h}`).join('\n'))}${row('出席貴賓',d.guests)}${row('初稿內文',d.body)}${row('修改授權',d.auth+(d.authNote?'（'+d.authNote+'）':''))}
 ${row('活動流程',d.flow)}${row('活動結束時間',d.endTime)}${row('出席貴賓（採訪）',d.guests4)}${row('計畫名稱',d.project)}${row('採訪重點',d.focus.map((h,i)=>`${i+1}. ${h}`).join('\n'))}${row('現場聯絡人',d.site.name?`${d.site.name}／${d.site.phone}`:'')}
 ${row('貼文內容',d.postText)}${row('相關連結',d.postLink)}${row('素材',d.assets)}
-${row('照片連結',d.photoLink)}${row('圖說',d.captions.map((h,i)=>`圖${i+1} ${h}`).join('\n'))}
+${row('照片連結',d.photoLink)}${row('圖說',d.figures.map(f=>`圖${f.no} ${f.caption}`).join('\n'))}
 ${row('系統檢核提醒',d.warnings.join('\n'))}
 </table>`;
 }
 
 $('submitBtn').onclick=async()=>{
   const res=$('result');
-  if(CONFIG.BACKEND_URL&&photos.length&&!$('sec6').classList.contains('hidden')){
+  if(CONFIG.BACKEND_URL&&filesToUpload().length){
     $('submitBtn').disabled=true;
-    try{await uploadPhotos(m=>res.innerHTML=`<div class="notice info">${esc(m)}…請勿關閉頁面</div>`);
-      res.innerHTML=`<div class="up-ok">✓ 照片已上傳至公關中心雲端（${uploaded.count} 張）</div>`}
-    catch(err){res.innerHTML=`<div class="notice err">照片上傳失敗：${esc(err.message)}。請稍後再按一次，或移除照片改填雲端連結。</div>`;$('submitBtn').disabled=false;return}
+    try{await uploadAll(m=>res.innerHTML=`<div class="notice info">${esc(m)}…請勿關閉頁面</div>`);
+      res.innerHTML=`<div class="up-ok">✓ 檔案已上傳至公關中心雲端（照片 ${uploaded.photoCount} 張、素材 ${uploaded.assetCount} 個）</div>`}
+    catch(err){res.innerHTML=`<div class="notice err">上傳失敗：${esc(err.message)}。請稍後再按一次，或移除檔案改填雲端連結。</div>`;$('submitBtn').disabled=false;return}
     $('submitBtn').disabled=false;
   }
   const d=collect();
@@ -668,7 +721,29 @@ function setCell(tc,lines){
     r.appendChild(t);p.appendChild(r);tc.appendChild(p)});
 }
 const lines=s=>String(s||'').split(/\n+/).map(x=>x.trim()).filter(Boolean);
+let PIC_SEQ=0, PIC_FILES=[];
+function addPicture(tc,th,label){
+  const doc=tc.ownerDocument,id=++PIC_SEQ,rid='rIdNkPic'+id,name=`nkpic${id}.jpg`;
+  PIC_FILES.push({rid,name,buf:th.buf});
+  const wEmu=Math.round(914400*Math.min(2.6,1.9*th.w/th.h)),hEmu=Math.round(wEmu*th.h/th.w);
+  const x=`<w:r xmlns:w="${WNS}" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${wEmu}" cy="${hEmu}"/><wp:docPr id="${9000+id}" name="${label}"/><wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1"/></wp:cNvGraphicFramePr><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic><pic:nvPicPr><pic:cNvPr id="${9000+id}" name="${name}"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="${rid}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${wEmu}" cy="${hEmu}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>`;
+  const run=doc.importNode(new DOMParser().parseFromString(x,'application/xml').documentElement,true);
+  const p=kids(tc,'p')[0];const pPr=p&&kids(p,'pPr')[0];
+  const np=doc.createElementNS(WNS,'w:p');if(pPr)np.appendChild(pPr.cloneNode(true));np.appendChild(run);
+  tc.insertBefore(np,p||null);
+}
+async function finishPictures(zip){
+  if(!PIC_FILES.length)return;
+  let rels=await zip.file('word/_rels/document.xml.rels').async('string');
+  PIC_FILES.forEach(f=>{zip.file('word/media/'+f.name,f.buf);
+    rels=rels.replace('</Relationships>',`<Relationship Id="${f.rid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/${f.name}"/></Relationships>`)});
+  zip.file('word/_rels/document.xml.rels',rels);
+  let ct=await zip.file('[Content_Types].xml').async('string');
+  if(!/Extension="jpg"/i.test(ct))ct=ct.replace('<Default Extension="xml"','<Default Extension="jpg" ContentType="image/jpeg"/><Default Extension="xml"');
+  zip.file('[Content_Types].xml',ct);
+}
 async function buildDocx(d){
+  PIC_SEQ=0;PIC_FILES=[];
   const zip=await JSZip.loadAsync(TEMPLATE_B64,{base64:true});
   const xml=await zip.file('word/document.xml').async('string');
   const doc=new DOMParser().parseFromString(xml,'application/xml');
@@ -741,18 +816,20 @@ async function buildDocx(d){
     if(d.assets)setCell(cells(r[2])[1],[d.assets]);else drop(r[2]);
   }else dropSection('五、');
 
-  // 六、照片及圖說
+  // 六、照片及圖說（每列：圖號＋縮圖｜圖說）
   if(isNews||has('fbPost')){const t=sec['六、'].tbl,r=rows('六、');
-    setCell(cells(r[0])[0],['照片連結']);setCell(cells(r[0])[1],[d.photoLink]);
-    const caps=d.captions,slots=r.slice(2);
-    if(!caps.length){slots.forEach(drop);drop(r[1])}
+    setCell(cells(r[0])[0],['照片連結']);setCell(cells(r[0])[1],lines(d.photoLink).length?lines(d.photoLink):['—']);
+    const figs=d.figures,slots=r.slice(2);
+    if(!figs.length){slots.forEach(drop);drop(r[1])}
     else{
-      while(slots.length<caps.length){const n=slots[slots.length-1].cloneNode(true);t.appendChild(n);slots.push(n)}
-      slots.forEach((tr,i)=>{
-        if(i>=caps.length){drop(tr);return}
-        const trPr=kids(tr,'trPr')[0];if(trPr)kids(trPr,'trHeight').forEach(h=>trPr.removeChild(h));
-        setCell(cells(tr)[1],[`圖${i+1}`]);setCell(cells(tr)[2],[caps[i]]);
-      });
+      while(slots.length<figs.length){const n=slots[slots.length-1].cloneNode(true);t.appendChild(n);slots.push(n)}
+      for(let i=0;i<slots.length;i++){const tr=slots[i];
+        if(i>=figs.length){drop(tr);continue}
+        const f=figs[i];
+        setCell(cells(tr)[1],[`圖${f.no}`]);setCell(cells(tr)[2],[f.caption||'（未填圖說）']);
+        if(f.photo){const th=await thumb(f.photo);
+          if(th)addPicture(cells(tr)[1],th,`圖${f.no}`);else setCell(cells(tr)[1],[`圖${f.no}`,f.photo.name])}
+      }
     }
   }else dropSection('六、');
 
@@ -777,6 +854,7 @@ async function buildDocx(d){
   }
 
   zip.file('word/document.xml',new XMLSerializer().serializeToString(doc));
+  await finishPictures(zip);
   return zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
 }
 
