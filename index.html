@@ -17,6 +17,10 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Noto Sans TC
 header{background:var(--brand);color:#fff;padding:22px 16px}
 header .wrap{max-width:1180px;margin:0 auto}
 header small{opacity:.8;display:block;font-size:13px}
+.head-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.head-text{min-width:0}
+.head-logo{height:64px;width:64px;object-fit:contain;background:#fff;border-radius:10px;padding:4px;flex:none}
+@media (max-width:640px){.head-logo{height:52px;width:52px}}
 header h1{margin:4px 0 0;font-size:24px;letter-spacing:.04em}
 .guide-link{display:inline-block;margin-top:8px;color:#fff;font-size:14px;border:1px solid rgba(255,255,255,.6);border-radius:99px;padding:3px 12px;text-decoration:none}
 .guide-link:hover{background:rgba(255,255,255,.15)}
@@ -121,8 +125,13 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
 </head>
 <body>
 <header><div class="wrap">
-  <small>國立高雄科技大學｜秘書室公關中心｜BC03附表（修訂日期：115年10月28日）</small>
-  <h1>新聞資訊上架申請表</h1>
+  <div class="head-row">
+    <div class="head-text">
+      <small>國立高雄科技大學｜秘書室公關中心｜BC03附表（修訂日期：115年10月28日）</small>
+      <h1>新聞資訊上架申請表</h1>
+    </div>
+    <img class="head-logo" src="%E9%AB%98%E7%A7%91%E5%A4%A7NKUST.png" alt="國立高雄科技大學 NKUST" onerror="this.remove()">
+  </div>
   <a class="guide-link" href="BC03-writing-guide.pdf" target="_blank" rel="noopener">📄 下載新聞稿撰寫指引（含範例）</a>
 </div></header>
 
