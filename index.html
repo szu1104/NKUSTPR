@@ -7,27 +7,30 @@
 <title>新聞資訊上架申請表｜國立高雄科技大學公關中心</title>
 <style>
 :root{
-  --ink:#1c2430; --muted:#5d6878; --line:#cfd6df; --bg:#f4f6f9; --paper:#fff;
-  --brand:#123c7a; --brand-soft:#e7eef8; --ok:#1d7a46; --ok-soft:#e5f4ec;
+  --ink:#1c2430; --muted:#5d6878; --line:#d7dce8; --bg:#f5f6fa; --paper:#fff;
+  --brand:#2a4198; --brand-soft:#eef1fa; --sky:#006dac; --accent:#ed6d00; --ok:#1d7a46; --ok-soft:#e5f4ec;
   --warn:#9a5b00; --warn-soft:#fff4df; --err:#b3261e; --err-soft:#fdeceb;
   --radius:10px;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif}
-header{background:var(--brand);color:#fff;padding:22px 16px}
-header .wrap{max-width:1180px;margin:0 auto}
-header small{opacity:.8;display:block;font-size:13px}
-.head-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+header{background:#fff;color:var(--brand);padding:16px 16px 14px;border-bottom:1px solid var(--line);position:relative}
+header::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:linear-gradient(90deg,var(--brand) 0 60%,var(--sky) 60% 85%,var(--accent) 85%)}
+header .wrap{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.head-row{display:flex;align-items:center;gap:14px;min-width:0}
+.head-logo{height:64px;width:auto;flex:none;display:block}
 .head-text{min-width:0}
-.head-logo{height:64px;width:64px;object-fit:contain;background:#fff;border-radius:10px;padding:4px;flex:none}
-@media (max-width:640px){.head-logo{height:52px;width:52px}}
-header h1{margin:4px 0 0;font-size:24px;letter-spacing:.04em}
-.guide-link{display:inline-block;margin-top:8px;color:#fff;font-size:14px;border:1px solid rgba(255,255,255,.6);border-radius:99px;padding:3px 12px;text-decoration:none}
-.guide-link:hover{background:rgba(255,255,255,.15)}
+header small{display:block;font-size:13px;color:var(--sky);letter-spacing:.02em}
+header h1{margin:2px 0 0;font-size:24px;letter-spacing:.04em;color:var(--brand)}
+.guide-link{display:inline-block;color:var(--brand);font-size:14px;border:1px solid var(--brand);border-radius:99px;padding:4px 14px;text-decoration:none;background:#fff;white-space:nowrap}
+.guide-link:hover{background:var(--brand-soft)}
+.head-side{display:flex;align-items:center;gap:12px}
+.head-mascot{height:68px;width:auto;max-width:110px;object-fit:contain;flex:none}
+@media (max-width:640px){.head-logo{height:52px}header h1{font-size:21px}.head-side{width:100%;justify-content:space-between}.head-mascot{height:50px}}
 .layout{max-width:1180px;margin:0 auto;padding:20px 16px 80px;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start}
 @media (max-width:900px){.layout{grid-template-columns:1fr}.side{position:static!important}}
 section.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:18px;overflow:hidden}
-section.card>h2{margin:0;padding:12px 16px;font-size:17px;background:var(--brand-soft);color:var(--brand);border-bottom:1px solid var(--line)}
+section.card>h2{margin:0;padding:12px 16px 12px 14px;font-size:17px;background:var(--brand-soft);color:var(--brand);border-bottom:1px solid var(--line);border-left:4px solid var(--brand)}
 section.card>.body{padding:14px 16px}
 .hint{color:var(--muted);font-size:13.5px}
 table.form{width:100%;border-collapse:collapse}
@@ -126,13 +129,16 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:20px}
 <body>
 <header><div class="wrap">
   <div class="head-row">
+    <img class="head-logo" src="%E9%AB%98%E7%A7%91%E5%A4%A7NKUST.png" alt="國立高雄科技大學 NKUST" onerror="this.remove()">
     <div class="head-text">
       <small>國立高雄科技大學｜秘書室公關中心｜BC03附表（修訂日期：115年10月28日）</small>
       <h1>新聞資訊上架申請表</h1>
     </div>
-    <img class="head-logo" src="%E9%AB%98%E7%A7%91%E5%A4%A7NKUST.png" alt="國立高雄科技大學 NKUST" onerror="this.remove()">
   </div>
-  <a class="guide-link" href="BC03-writing-guide.pdf" target="_blank" rel="noopener">📄 下載新聞稿撰寫指引（含範例）</a>
+  <div class="head-side">
+    <a class="guide-link" href="BC03-writing-guide.pdf" target="_blank" rel="noopener">📄 下載新聞稿撰寫指引（含範例）</a>
+    <img class="head-mascot" src="SuperNorth-header.png" alt="" aria-hidden="true" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='SuperNorth.png'}else this.remove()">
+  </div>
 </div></header>
 
 <div class="layout">
